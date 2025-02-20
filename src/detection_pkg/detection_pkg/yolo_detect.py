@@ -11,6 +11,7 @@ from ultralytics import YOLO
 
 
 model_path = "best_yolo11_ncnn_model"
+model_path = "detection_pkg/detection_pkg/best_yolo11_ncnn_model"
 usb_idx = 0
 user_res = None
 record = False
@@ -30,7 +31,7 @@ labels = ["Botellas"]
 
 
 # Abrimos la cámara
-cap = cv2.VideoCapture(usb_idx, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(usb_idx)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
