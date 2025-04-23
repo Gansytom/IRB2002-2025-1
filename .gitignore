@@ -4,3 +4,4 @@
 /install
 /log
 platformio.ini
+/src/.vscode
