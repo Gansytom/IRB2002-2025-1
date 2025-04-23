@@ -1,0 +1,126 @@
+COMMANDS:
+	- Crear paquetes (desde directorio src):
+		· Crear paquete de python:
+			ros2 pkg create <pkg_name> --build-type ament_python --dependencies rclpy
+		· Crear paquete de C++:
+			ros2 pkg create <pkg_name> --build-type ament_cmake --dependencies rclcpp
+
+	- Compilar packetes (desde directorio de workspace):
+		· Compilar todos los paquetes:
+			colcon build
+		· Compilar paquete en especìfico:
+			colcon build --packages-select <pkg_name>
+	- Crear un archivo:
+		touch <file_name>
+		
+	- Marcar como ejecutable:
+		chmod +x <file_name>
+
+	- Installar nodo en python:
+		editar archivo setup.py:
+			entry_points={
+				'console_scripts': [
+				    "<executable_name> = <pkg_name>.<file_name>:<function_name>"
+				],
+			    },
+	- Correr archivo:
+		ros2 run <pkg_name> <file_name>
+	- Ver nodos activos:
+		ros2 node list
+	- Ver informaciòn de un nodo:
+		ros2 node info <node_name>
+	- Correr nodo con nombre especìfico:
+		ros2 run <pkg_name> <file_name> --ros-args --remap __node:=<new_name>
+		Ò
+		ros2 run <pkg_name> <file_name> --ros-args -r __node:=<new_name>
+	- Compilar paquetes que acepten cambios posteriores en el archivo:
+		colcon build --packages-select <pkg_name> --symlink-install
+		*El archivo tiene que ser un ejecutable
+	- Ver tòpicos activos:
+		ros2 topic list
+	- Imprimir lo que venga del tòpico:
+		ros2 topic echo <topic_name>
+	- Ver servicios activos:
+		ros2 service list
+	- Ver el tipo de servicio:
+		ros2 service type <service_name>
+	- Ver como es la interfaz:
+		ros2 interface show <interface_name>
+	- Probar llamada de servicio:
+		ros2 service call <service_nameZ> <service_tye> "{<request_1>: <value>, <request_2>: <other_value>, ...}"
+	- Renombrar el servicio dentro del nodo:
+		ros2 run <pkg_name> <server_name> --ros-args -r <service_original_name>:=<service_new_name>
+		ros2 run <pkg_name> <client_name> --ros-args -r <service_original_name>:=<service_new_name>
+	- Ver interfaces disponibles en un paquete:
+		ros2 interface package <pkg_name>
+	- Ver paràmetros activos:
+		ros2 param list
+	- Cambiar el valor de un paràmetro:
+		ros2 run <pkg_name> <file_name> --ros-args -p <param_name>:=<new_value> -p <param_name>:=<new_value> ...
+	- Obtener valor de paràmetro:
+		ros2 param get <node_name> <param_name>
+	- Cargar un archivo de paràmetros yaml:
+		ros2 run <pkg_name> <file_name> --ros-args --params-file <param_file_directory>
+	- Ver frecuencia de publicaciòn en un tòpico:
+		ros2 topic hz <topic_name>
+	- Correr archivo launch:
+		ros2 launch <pkg_name> <xml_name_file>
+	- Correr un archivo con namespace:
+		ros2 run <pkg_name> <file_name> --ros-args -r __ns:=/<namespace>
+	- Evitar que se aplique un namespace en el nombre de un topic, servicio, etc:
+		Anteponer un "/" antes del nombre respectivo
+
+
+
+			    
+UTILS:
+	- OOP Template for Nodes:
+		· Python Code:
+			#!/usr/bin/env python3
+			import rclpy
+			from rclpy.node import Node
+
+
+			class MyCustomNode(Node): # MODIFY NAME
+			    def __init__(self):
+				super().__init__("node_name") # MODIFY NAME
+				
+
+			def main(args=None):
+			    rclpy.init(args=args) # Initialize the ROS communication
+			    node = MyCustomNode()
+			    rclpy.spin(node) # Keep the node running
+			    rclpy.shutdown() # Shutdown the ROS communication
+
+
+			if __name__ == "__main__":
+			    main()	
+		· C++ Code:
+			#include "rclcpp/rclcpp.hpp"
+
+			class MyCustomNode : public rclcpp::Node // MODIFY NAME
+			{
+			public:
+			    MyCustomNode() : Node("node_name") // MODIFY NAME
+			    {
+			    }
+
+			private:
+			};
+
+			int main(int argc, char **argv)
+			{
+			    rclcpp::init(argc, argv);
+			    auto node = std::make_shared<MyCustomNode>(); // MODIFY NAME
+			    rclcpp::spin(node);
+			    rclcpp::shutdown();
+			    return 0;
+			}
+	- Repositorio de interfaces:
+		https://github.com/ros2/example_interfaces
+		https://github.com/ros2/common_interfaces
+	- Instalar packete de interfaces:
+		sudo apt install ros-<distribution>-<pkg_name>
+	- Ejemplos de dependencias:
+		https://roboticsbackend.com/ros2-create-custom-message/
+	- El archivo de msg tiene que estar escrito en UpperCase y no incluir la palabra "Msg"
