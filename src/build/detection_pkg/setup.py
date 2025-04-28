@@ -1,1 +1,0 @@
-/home/grupo1/IRB2002-2025-1/src/detection_pkg/setup.py

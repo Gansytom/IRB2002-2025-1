@@ -15,8 +15,8 @@ class CameraNode(Node):
         self.get_logger().info("Initializing camera...")
         self.bridge = CvBridge()
         self.cap = cv2.VideoCapture(0, cv2.CAP_V4L)
-        self.cap.set(3, 640)
-        self.cap.set(4, 480)
+        self.cap.set(3, 220)
+        self.cap.set(4, 220)
         if not self.cap.isOpened():
             raise ValueError("Could not open video device")
         ret, img = self.cap.read()
@@ -30,8 +30,8 @@ class CameraNode(Node):
             "camera_topic",
             qos_profile=qos_profile_sensor_data
         )
-        # Publish the image captured every 0.1 seconds
-        self.timer = self.create_timer(0.1, self.timer_callback)
+        # Publish the image captured every 0.2 seconds
+        self.timer = self.create_timer(0.2, self.timer_callback)
         self.get_logger().info("Camera node started")
 
     def timer_callback(self):

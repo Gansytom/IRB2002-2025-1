@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="detection_pkg" exec="prediction_node" name="detection_node" />
+    <node pkg="detection_pkg" exec="camera_node" name="camera_node" />
+</launch>
