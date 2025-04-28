@@ -1,0 +1,24 @@
+[3.043s] Invoking command in '/home/grupo1/IRB2002-2025-1/src/detection_pkg': PYTHONPATH=/home/grupo1/IRB2002-2025-1/src/build/detection_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/detection_pkg build --build-base /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build install --record /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/install.log --single-version-externally-managed install_data
+[4.281s] running egg_info
+[4.284s] writing ../build/detection_pkg/detection_pkg.egg-info/PKG-INFO
+[4.285s] writing dependency_links to ../build/detection_pkg/detection_pkg.egg-info/dependency_links.txt
+[4.286s] writing entry points to ../build/detection_pkg/detection_pkg.egg-info/entry_points.txt
+[4.287s] writing requirements to ../build/detection_pkg/detection_pkg.egg-info/requires.txt
+[4.288s] writing top-level names to ../build/detection_pkg/detection_pkg.egg-info/top_level.txt
+[4.296s] reading manifest file '../build/detection_pkg/detection_pkg.egg-info/SOURCES.txt'
+[4.300s] writing manifest file '../build/detection_pkg/detection_pkg.egg-info/SOURCES.txt'
+[4.301s] running build
+[4.301s] running build_py
+[4.303s] copying detection_pkg/camera_node.py -> /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg
+[4.304s] running install
+[4.305s] running install_lib
+[4.310s] copying /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg/camera_node.py -> /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg
+[4.313s] byte-compiling /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg/camera_node.py to camera_node.cpython-310.pyc
+[4.316s] running install_data
+[4.317s] running install_egg_info
+[4.324s] removing '/home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+[4.326s] Copying ../build/detection_pkg/detection_pkg.egg-info to /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg-0.0.0-py3.10.egg-info
+[4.332s] running install_scripts
+[4.419s] Installing camera_node script to /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/detection_pkg
+[4.421s] writing list of installed files to '/home/grupo1/IRB2002-2025-1/src/build/detection_pkg/install.log'
+[4.554s] Invoked command in '/home/grupo1/IRB2002-2025-1/src/detection_pkg' returned '0': PYTHONPATH=/home/grupo1/IRB2002-2025-1/src/build/detection_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/detection_pkg build --build-base /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build install --record /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/install.log --single-version-externally-managed install_data

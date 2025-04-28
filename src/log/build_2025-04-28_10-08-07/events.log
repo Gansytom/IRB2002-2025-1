@@ -1,0 +1,88 @@
+[0.000000] (-) TimerEvent: {}
+[0.001943] (detection_pkg) JobQueued: {'identifier': 'detection_pkg', 'dependencies': OrderedDict()}
+[0.002771] (detection_pkg) JobStarted: {'identifier': 'detection_pkg'}
+[0.098787] (-) TimerEvent: {}
+[0.199885] (-) TimerEvent: {}
+[0.300938] (-) TimerEvent: {}
+[0.402255] (-) TimerEvent: {}
+[0.503131] (-) TimerEvent: {}
+[0.603991] (-) TimerEvent: {}
+[0.704853] (-) TimerEvent: {}
+[0.805753] (-) TimerEvent: {}
+[0.906854] (-) TimerEvent: {}
+[1.007725] (-) TimerEvent: {}
+[1.108614] (-) TimerEvent: {}
+[1.209453] (-) TimerEvent: {}
+[1.310248] (-) TimerEvent: {}
+[1.411144] (-) TimerEvent: {}
+[1.511892] (-) TimerEvent: {}
+[1.612675] (-) TimerEvent: {}
+[1.713647] (-) TimerEvent: {}
+[1.815155] (-) TimerEvent: {}
+[1.917033] (-) TimerEvent: {}
+[2.018731] (-) TimerEvent: {}
+[2.119684] (-) TimerEvent: {}
+[2.220744] (-) TimerEvent: {}
+[2.321991] (-) TimerEvent: {}
+[2.423054] (-) TimerEvent: {}
+[2.523900] (-) TimerEvent: {}
+[2.624760] (-) TimerEvent: {}
+[2.725588] (-) TimerEvent: {}
+[2.826421] (-) TimerEvent: {}
+[2.927384] (-) TimerEvent: {}
+[3.028425] (-) TimerEvent: {}
+[3.129344] (-) TimerEvent: {}
+[3.230191] (-) TimerEvent: {}
+[3.331127] (-) TimerEvent: {}
+[3.431931] (-) TimerEvent: {}
+[3.532642] (-) TimerEvent: {}
+[3.633530] (-) TimerEvent: {}
+[3.734326] (-) TimerEvent: {}
+[3.835356] (-) TimerEvent: {}
+[3.938022] (-) TimerEvent: {}
+[4.012645] (detection_pkg) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../build/detection_pkg', 'build', '--build-base', '/home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build', 'install', '--record', '/home/grupo1/IRB2002-2025-1/src/build/detection_pkg/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/grupo1/IRB2002-2025-1/src/detection_pkg', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'grupo1', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib', 'HOME': '/home/grupo1', 'OLDPWD': '/home/grupo1/IRB2002-2025-1/src/detection_pkg', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'DBUS_STARTER_BUS_TYPE': 'session', 'SYSTEMD_EXEC_PID': '1650', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus,guid=a02534521570bcd058a86d7567b72d6e', 'COLORTERM': 'truecolor', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'COLCON_PREFIX_PATH': '/home/grupo1/IRB2002-2025-1/install', 'ROS_DISTRO': 'humble', 'LOGNAME': 'grupo1', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'grupo1', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/opt/ros/humble/bin:/home/grupo1/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/grupo1-desktop:@/tmp/.ICE-unix/1650,unix/grupo1-desktop:/tmp/.ICE-unix/1650', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/5b8d556d_0650_475c_a1ff_52e786a1e10d', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.SPQE22', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'GNOME_TERMINAL_SERVICE': ':1.108', 'SSH_AGENT_LAUNCHER': 'gnome-keyring', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/grupo1/IRB2002-2025-1/install/detection_pkg:/opt/ros/humble', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/grupo1/IRB2002-2025-1/src/build/detection_pkg', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'DBUS_STARTER_ADDRESS': 'unix:path=/run/user/1000/bus,guid=a02534521570bcd058a86d7567b72d6e', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/grupo1/IRB2002-2025-1/src/build/detection_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages:/home/grupo1/IRB2002-2025-1/install/detection_pkg/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'COLCON': '1', 'VTE_VERSION': '6800'}, 'shell': False}
+[4.038304] (-) TimerEvent: {}
+[4.139925] (-) TimerEvent: {}
+[4.240926] (-) TimerEvent: {}
+[4.341769] (-) TimerEvent: {}
+[4.442683] (-) TimerEvent: {}
+[4.543419] (-) TimerEvent: {}
+[4.644207] (-) TimerEvent: {}
+[4.745072] (-) TimerEvent: {}
+[4.845913] (-) TimerEvent: {}
+[4.946795] (-) TimerEvent: {}
+[5.047582] (-) TimerEvent: {}
+[5.148416] (-) TimerEvent: {}
+[5.249426] (-) TimerEvent: {}
+[5.350326] (-) TimerEvent: {}
+[5.451482] (-) TimerEvent: {}
+[5.552368] (-) TimerEvent: {}
+[5.624997] (detection_pkg) StdoutLine: {'line': b'running egg_info\n'}
+[5.628458] (detection_pkg) StdoutLine: {'line': b'writing ../build/detection_pkg/detection_pkg.egg-info/PKG-INFO\n'}
+[5.629615] (detection_pkg) StdoutLine: {'line': b'writing dependency_links to ../build/detection_pkg/detection_pkg.egg-info/dependency_links.txt\n'}
+[5.630740] (detection_pkg) StdoutLine: {'line': b'writing entry points to ../build/detection_pkg/detection_pkg.egg-info/entry_points.txt\n'}
+[5.631869] (detection_pkg) StdoutLine: {'line': b'writing requirements to ../build/detection_pkg/detection_pkg.egg-info/requires.txt\n'}
+[5.633022] (detection_pkg) StdoutLine: {'line': b'writing top-level names to ../build/detection_pkg/detection_pkg.egg-info/top_level.txt\n'}
+[5.643751] (detection_pkg) StdoutLine: {'line': b"reading manifest file '../build/detection_pkg/detection_pkg.egg-info/SOURCES.txt'\n"}
+[5.648845] (detection_pkg) StdoutLine: {'line': b"writing manifest file '../build/detection_pkg/detection_pkg.egg-info/SOURCES.txt'\n"}
+[5.650001] (detection_pkg) StdoutLine: {'line': b'running build\n'}
+[5.650857] (detection_pkg) StdoutLine: {'line': b'running build_py\n'}
+[5.652700] (detection_pkg) StdoutLine: {'line': b'copying detection_pkg/camera_node.py -> /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg\n'}
+[5.653309] (-) TimerEvent: {}
+[5.654437] (detection_pkg) StdoutLine: {'line': b'running install\n'}
+[5.658908] (detection_pkg) StdoutLine: {'line': b'running install_lib\n'}
+[5.660615] (detection_pkg) StdoutLine: {'line': b'copying /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg/camera_node.py -> /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg\n'}
+[5.663913] (detection_pkg) StdoutLine: {'line': b'byte-compiling /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg/camera_node.py to camera_node.cpython-310.pyc\n'}
+[5.667077] (detection_pkg) StdoutLine: {'line': b'running install_data\n'}
+[5.668038] (detection_pkg) StdoutLine: {'line': b'running install_egg_info\n'}
+[5.676073] (detection_pkg) StdoutLine: {'line': b"removing '/home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg-0.0.0-py3.10.egg-info' (and everything under it)\n"}
+[5.677895] (detection_pkg) StdoutLine: {'line': b'Copying ../build/detection_pkg/detection_pkg.egg-info to /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg-0.0.0-py3.10.egg-info\n'}
+[5.687921] (detection_pkg) StdoutLine: {'line': b'running install_scripts\n'}
+[5.753541] (-) TimerEvent: {}
+[5.793570] (detection_pkg) StdoutLine: {'line': b'Installing camera_node script to /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/detection_pkg\n'}
+[5.795773] (detection_pkg) StdoutLine: {'line': b"writing list of installed files to '/home/grupo1/IRB2002-2025-1/src/build/detection_pkg/install.log'\n"}
+[5.853953] (-) TimerEvent: {}
+[5.955498] (-) TimerEvent: {}
+[5.959276] (detection_pkg) CommandEnded: {'returncode': 0}
+[6.024994] (detection_pkg) JobEnded: {'identifier': 'detection_pkg', 'rc': 0}
+[6.028905] (-) EventReactorShutdown: {}

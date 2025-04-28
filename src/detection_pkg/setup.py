@@ -21,6 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'camera_node = detection_pkg.camera_node:main',
+            'test = detection_pkg.test:main',
+            'prediction_node = detection_pkg.prediction_node:main',
         ],
     },
 )

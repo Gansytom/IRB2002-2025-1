@@ -1,0 +1,38 @@
+running egg_info
+creating ../build/detection_pkg/detection_pkg.egg-info
+writing ../build/detection_pkg/detection_pkg.egg-info/PKG-INFO
+writing dependency_links to ../build/detection_pkg/detection_pkg.egg-info/dependency_links.txt
+writing entry points to ../build/detection_pkg/detection_pkg.egg-info/entry_points.txt
+writing requirements to ../build/detection_pkg/detection_pkg.egg-info/requires.txt
+writing top-level names to ../build/detection_pkg/detection_pkg.egg-info/top_level.txt
+writing manifest file '../build/detection_pkg/detection_pkg.egg-info/SOURCES.txt'
+reading manifest file '../build/detection_pkg/detection_pkg.egg-info/SOURCES.txt'
+writing manifest file '../build/detection_pkg/detection_pkg.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build
+creating /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib
+creating /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg
+copying detection_pkg/capture.py -> /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg
+copying detection_pkg/__init__.py -> /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg
+copying detection_pkg/camera_node.py -> /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg
+running install
+running install_lib
+creating /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg
+copying /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg/capture.py -> /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg
+copying /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg/__init__.py -> /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg
+copying /home/grupo1/IRB2002-2025-1/src/build/detection_pkg/build/lib/detection_pkg/camera_node.py -> /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg
+byte-compiling /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg/capture.py to capture.cpython-310.pyc
+byte-compiling /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg/camera_node.py to camera_node.cpython-310.pyc
+running install_data
+creating /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/share/ament_index
+creating /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/share/ament_index/resource_index
+creating /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/share/ament_index/resource_index/packages
+copying resource/detection_pkg -> /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/share/ament_index/resource_index/packages
+copying package.xml -> /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/share/detection_pkg
+running install_egg_info
+Copying ../build/detection_pkg/detection_pkg.egg-info to /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/python3.10/site-packages/detection_pkg-0.0.0-py3.10.egg-info
+running install_scripts
+Installing camera_node script to /home/grupo1/IRB2002-2025-1/src/install/detection_pkg/lib/detection_pkg
+writing list of installed files to '/home/grupo1/IRB2002-2025-1/src/build/detection_pkg/install.log'
