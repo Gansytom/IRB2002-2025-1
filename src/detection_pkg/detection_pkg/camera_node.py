@@ -17,6 +17,7 @@ class CameraNode(Node):
         self.cap = cv2.VideoCapture(0, cv2.CAP_V4L)
         self.cap.set(3, 640)
         self.cap.set(4, 640)
+        
         if not self.cap.isOpened():
             raise ValueError("Could not open video device")
         ret, img = self.cap.read()

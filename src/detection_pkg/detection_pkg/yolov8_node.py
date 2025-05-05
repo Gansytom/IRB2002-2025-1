@@ -21,7 +21,7 @@ class PredictionNode(Node):
             qos_profile=qos_profile_sensor_data
         )
         self.get_logger().info("Prediction node started")
-        #self.create_timer(0.3, self.timer_callback)
+        self.timer = self.create_timer(0.5, self.timer_callback)
         self.frame = None
         self.results = None
 
