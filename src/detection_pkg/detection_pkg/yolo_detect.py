@@ -10,8 +10,7 @@ from ultralytics import YOLO
 
 
 
-model_path = "best_yolo11_ncnn_model"
-model_path = "detection_pkg/detection_pkg/best_yolo11_ncnn_model"
+model_path = "src/detection_pkg/detection_pkg/best_yolo11_ncnn_model"
 usb_idx = 0
 user_res = None
 record = False
