@@ -23,6 +23,7 @@ class PredictionNode(Node):
         self.get_logger().info("Prediction node started")
         self.timer = self.create_timer(0.5, self.timer_callback)
         self.frame = None
+        self.annotated_frame = None
         self.results = None
 
         model_path = 'IRB2002-2025-1/src/detection_pkg/detection_pkg/best.pt'
@@ -34,9 +35,9 @@ class PredictionNode(Node):
             # Convert the ROS Image message to OpenCV format
             self.frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
             self.results = self.model.predict(self.frame, imgsz=640, conf=0.5)
-            annotated_frame = self.results[0].plot()
+            self.annotated_frame = self.results[0].plot()
 
-            cv2.imshow("YOLOv8 Detection", annotated_frame)
+            cv2.imshow("YOLOv8 Detection", self.annotated_frame)
             cv2.waitKey(1)
         except CvBridgeError as e:
             self.get_logger().error(f"Error converting image: {e}")
