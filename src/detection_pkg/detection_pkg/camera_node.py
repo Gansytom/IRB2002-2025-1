@@ -14,7 +14,7 @@ class CameraNode(Node):
         # Initialize the camera
         self.get_logger().info("Initializing camera...")
         self.bridge = CvBridge()
-        self.cap = cv2.VideoCapture(0, cv2.CAP_V4L)
+        self.cap = cv2.VideoCapture(1, cv2.CAP_V4L)
         self.cap.set(3, 640)
         self.cap.set(4, 640)
         

@@ -34,7 +34,7 @@ class PredictionNode(Node):
         try:
             # Convert the ROS Image message to OpenCV format
             self.frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
-            self.results = self.model.predict(self.frame, imgsz=640, conf=0.5)
+            #self.results = self.model.predict(self.frame, imgsz=640, conf=0.5)
             self.annotated_frame = self.results[0].plot()
 
             cv2.imshow("YOLOv8 Detection", self.annotated_frame)

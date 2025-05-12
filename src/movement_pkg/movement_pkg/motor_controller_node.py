@@ -4,29 +4,67 @@ from rclpy.qos import qos_profile_sensor_data
 from rclpy.node import Node
 import serial
 import time
-from std_msgs.msg import Float64
+from geometry_msgs.msg import Twist
 
 class MotorControllerNode(Node):
     def __init__(self):
         super().__init__("motor_controller_node")
         self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
         self.ser.reset_input_buffer()
+        self.get_logger().info("Serial port opened successfully")
+        # Check if the serial port is open
+        if not self.ser.is_open:
+            self.get_logger().error("Failed to open serial port")
+            return
 
         # Create a suscriber for velocity
         self.vel_suscriber_ = self.create_subscription(
-            Float64,
+            Twist,
             "motion/cmd_vel",
-            self.vel_callback,
+            self.cmd_vel_callback,
             qos_profile=qos_profile_sensor_data
         )
 
-    def vel_callback(self, msg):
+        self.stop_timer = None
+        self.get_logger().info("Motor controller node started")  
+
+    def limit_velocity(self, vel):
+        return max(-254, min(254, vel))
+    
+    def cmd_vel_callback(self, msg):
+        linear = msg.linear.x
+        angular = msg.angular.z
+        self.stop_timer_period = msg.angular.x
+
+        # Convert the linear and angular velocities to a single value
+        vel_izq = int(linear - angular)
+        vel_der = int(linear + angular)
+
+        # Limit the velocities to the range [-254, 254]
+        vel_izq = self.limit_velocity(vel_izq)
+        vel_der = self.limit_velocity(vel_der)
+
         # Convert the velocity to a string and send it to the Arduino
-        vel_str = str(msg.data) + "\n"
-        self.ser.write(vel_str.encode('utf-8'))
-        line = self.ser.readline().decode('utf-8').rstrip()
-        self.get_logger().info(f"Velocity command: {line}")
+        cmd_str = f"{vel_izq};{vel_der}\n"
+        self.ser.write(cmd_str.encode('utf-8'))
+        self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
+
+        if self.stop_timer is None:
+            # Programar envío de 0 después de 5 segundos
+            self.stop_timer = self.create_timer(self.stop_timer_period, self.stop_motors)
+
         time.sleep(1)
+
+    def stop_motors(self):
+        stop_cmd = "0;0\n"
+        self.ser.write(stop_cmd.encode('utf-8'))
+        self.get_logger().info("Deteniendo motores...")
+
+        # Cancelar y eliminar el temporizador
+        if self.stop_timer is not None:
+            self.stop_timer.cancel()
+            self.destroy_timer(self.stop_timer)
+            self.stop_timer = None
 
 def main(args=None):
     rclpy.init(args=args)
