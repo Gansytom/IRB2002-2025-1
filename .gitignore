@@ -5,3 +5,8 @@
 /log
 platformio.ini
 /src/.vscode
+/src/basic_mobile_robot
+*.pdf
+*.gv
+*.repos
+*.csv

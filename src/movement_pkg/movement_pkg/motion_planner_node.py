@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
 import threading
 
 
@@ -12,46 +12,54 @@ class MotionPlannerNode(Node):
         # Create a timer to periodically call the planner function
         # self.vel_timer = self.create_timer(0.1, self.vel_timer_cb)
         # Create a publisher for the velocity command
-        self.publisher_ = self.create_publisher(Twist, "motion/cmd_vel", 10)
+        self.publisher_ = self.create_publisher(TwistStamped, "motion/cmd_vel", 10)
 
         # Ejecutar input por consola en hilo aparte para no bloquear ROS
         self.input_thread = threading.Thread(target=self.read_input_loop)
         self.input_thread.daemon = True
         self.input_thread.start()
 
-    def vel_timer_cb(self):
-        # Create a new message
-        msg = Twist()
-        # Set the velocity value
-        msg.data = 100.0
-        # Publish the message
-        self.publisher_.publish(msg)
-        self.get_logger().info(f"Publishing: {msg.data}")
+    # def vel_timer_cb(self):
+    #     # Create a new message
+    #     msg = Twist()
+    #     # Set the velocity value
+    #     msg.data = 100.0
+    #     # Publish the message
+    #     self.publisher_.publish(msg)
+    #     self.get_logger().info(f"Publishing: {msg.data}")
 
     def read_input_loop(self):
         while rclpy.ok():
-            try:
-                line = input("Ingresa: <vel_avance> <vel_rotacion> <tiempo>\nEjemplo: 100.0 20.0 5.0\n> ")
-                parts = line.strip().split()
-                if len(parts) != 3:
-                    self.get_logger().warn("Formato incorrecto. Se esperaban 3 valores.")
-                    continue
+            line = input("Ingresa alguno de los siguientes comandos:\n- on\n- stop\n- <vel_motor_izquierdo> <vel_motor_derecho> ")
+            parts = line.strip().split()
+            if line != "on" or line != "stop" or len(parts) != 2:
+                self.get_logger().warn("Comando incorrecto.")
+                continue
 
-                vel_avance = float(parts[0])
-                vel_rotacion = float(parts[1])
-                duracion = float(parts[2])
+            msg = TwistStamped()
+            if line == "on":
+                self.get_logger().info("Encendiendo motores...")
+                msg.header.frame_id = "on"
+                msg.twist.linear.x = 0.0
+                msg.twist.linear.y = 0.0
+            elif line == "stop":
+                self.get_logger().info("Deteniendo motores...")
+                msg.header.frame_id = "stop"
+                msg.twist.linear.x = 0.0
+                msg.twist.linear.y = 0.0
+            else:
+                msg.header.frame_id = "-"
+                vel_left = float(parts[0])
+                vel_right = float(parts[1])
+                
+                msg.twist.linear.x = vel_left
+                msg.twist.linear.y = vel_right
+                #msg.twist.angular.z = vel_rotacion
 
-                msg = Twist()
-                msg.linear.x = vel_avance
-                msg.angular.z = vel_rotacion
-                msg.angular.x = duracion
-
-                self.publisher_.publish(msg)
-                self.get_logger().info(f"Publicado: avance={vel_avance}, rotación={vel_rotacion}, duración={duracion}s")
-
-            except ValueError:
-                self.get_logger().warn("Entrada inválida. Usa números reales separados por espacios.")
-
+            self.publisher_.publish(msg)
+            self.get_logger().info(f"Publicando: {msg.twist.linear.x}, {msg.twist.linear.y}")
+            # Esperar un segundo antes de continuar
+            # time.sleep(1)
 
 def main(args=None):
     rclpy.init(args=args)
