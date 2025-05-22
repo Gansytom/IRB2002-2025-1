@@ -30,19 +30,19 @@ class MotionPlannerNode(Node):
 
     def read_input_loop(self):
         while rclpy.ok():
-            line = input("Ingresa alguno de los siguientes comandos:\n- on\n- stop\n- <vel_motor_izquierdo> <vel_motor_derecho> ")
+            line = input("Ingresa alguno de los siguientes comandos:\n- on\n- stop\n- <vel_motor_izquierdo> <vel_motor_derecho>\n")
             parts = line.strip().split()
-            if line != "on" or line != "stop" or len(parts) != 2:
+            if str(line) != "on" or str(line) != "stop" or len(parts) != 2:
                 self.get_logger().warn("Comando incorrecto.")
                 continue
 
             msg = TwistStamped()
-            if line == "on":
+            if str(line) == "on":
                 self.get_logger().info("Encendiendo motores...")
                 msg.header.frame_id = "on"
                 msg.twist.linear.x = 0.0
                 msg.twist.linear.y = 0.0
-            elif line == "stop":
+            elif str(line) == "stop":
                 self.get_logger().info("Deteniendo motores...")
                 msg.header.frame_id = "stop"
                 msg.twist.linear.x = 0.0
