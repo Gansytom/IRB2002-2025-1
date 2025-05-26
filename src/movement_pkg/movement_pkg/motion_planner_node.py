@@ -32,7 +32,8 @@ class MotionPlannerNode(Node):
         while rclpy.ok():
             line = input("Ingresa alguno de los siguientes comandos:\n- on\n- stop\n- <vel_motor_izquierdo> <vel_motor_derecho>\n")
             parts = line.strip().split()
-            if str(line) != "on" or str(line) != "stop" or len(parts) != 2:
+            print(line)
+            if str(line) != "on" and str(line) != "stop" and len(parts) > 2:
                 self.get_logger().warn("Comando incorrecto.")
                 continue
 

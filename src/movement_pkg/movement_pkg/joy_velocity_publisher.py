@@ -30,27 +30,52 @@ class JoyVelocityPublisher(Node):
         # IMPORTANTE: La asignación de botones se debe verificar
         # para cada controlador en particular...
         A_button = msg.buttons[0]
-        # B_button = msg.buttons[1]
-        # X_button = msg.buttons[3]
-        # Y_button = msg.buttons[4]
-        # LB_button = msg.buttons[6]
-        # RB_button = msg.buttons[7]
-        # LT_button = msg.buttons[8]
-        # RT_button = msg.buttons[9]
-        # LT_axis = msg.axes[5]
-        # RT_axis = msg.axes[4]
-        # SELECT_button = msg.buttons[10]
-        # START_button = msg.buttons[11]
-        #LSTICK_button = msg.buttons[13]
+        B_button = msg.buttons[1]
+        X_button = msg.buttons[2]
+        Y_button = msg.buttons[3]
+        LB_button = msg.buttons[4]
+        RB_button = msg.buttons[5]
+        # LT_button = msg.buttons[8] # No asignado
+        # RT_button = msg.buttons[9] # No asignado
+        SELECT_button = msg.buttons[6]
+        START_button = msg.buttons[7]
+        LSTICK_button = msg.buttons[9]
+        RSTICK_button = msg.buttons[10]
         LSTICK_x_axis = msg.axes[0]
         LSTICK_y_axis = msg.axes[1]
-        #RSTICK_button = msg.buttons[14]
-        # RSTICK_x_axis = msg.axes[2]
-        # RSTICK_y_axis = msg.axes[3]
-        #DIR_X = msg.axes[6]
-        #DIR_Y = msg.axes[7]
+        RSTICK_x_axis = msg.axes[3]
+        RSTICK_y_axis = msg.axes[4]
+        LT_axis = msg.axes[2]
+        RT_axis = msg.axes[5]
+        #DIR_X = msg.axes[6] # No se cual es
+        #DIR_Y = msg.axes[7] # No se cual es
+        # if A_button:
+        #     self.get_logger().info(f"Button A pressed")
+        # if B_button:
+        #     self.get_logger().info(f"Button B pressed")
+        # if X_button:
+        #     self.get_logger().info(f"Button X pressed")
+        # if Y_button:
+        #     self.get_logger().info(f"Button Y pressed")
+        # if LB_button:
+        #     self.get_logger().info(f"Left bumper pressed")
+        # if RB_button:
+        #     self.get_logger().info(f"Right bumper pressed")
+        # if SELECT_button:
+        #     self.get_logger().info(f"Select button pressed")
+        # if START_button:
+        #     self.get_logger().info(f"Start button pressed")
+        # if LSTICK_button:
+        #     self.get_logger().info(f"Left stick button pressed")
+        # if RSTICK_button:
+        #     self.get_logger().info(f"Right stick button pressed")
+        
+        # self.get_logger().info(f"Left stick x: {LSTICK_x_axis}, y: {LSTICK_y_axis}")
+        #self.get_logger().info(f"Right stick x: {RSTICK_x_axis}, y: {RSTICK_y_axis}")
+        #self.get_logger().info(f"Left trigger axis: {LT_axis}, Right trigger axis: {RT_axis}")
+        # self.get_logger().info(f"Direction x: {DIR_X}, y: {DIR_Y}")
 
-        if A_button:
+        if RB_button:
             self.get_logger().info(f"Left axes x: {LSTICK_x_axis}, y: {LSTICK_y_axis}")
             # prepara y publica un mensaje para la velocidad
             cmd_vel = Twist()

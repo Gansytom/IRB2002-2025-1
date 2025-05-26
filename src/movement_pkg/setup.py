@@ -24,6 +24,8 @@ setup(
             'motion_planner_node = movement_pkg.motion_planner_node:main',
             'joy_motor_controller_node = movement_pkg.joy_motor_controller_node:main',
             'joy_velocity_publisher = movement_pkg.joy_velocity_publisher:main',
+            'joy_velocity_publisher_diferential = movement_pkg.joy_velocity_publisher_diferential:main',
+            'joy_motor_controller_close_loop = movement_pkg.joy_motor_controller_close_loop:main',
         ],
     },
 )
