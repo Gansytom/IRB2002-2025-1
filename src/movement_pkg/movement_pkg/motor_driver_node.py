@@ -34,7 +34,7 @@ class MotorDriverNode(Node):
 
         # Convert the velocity to a string and send it to the Arduino
         if command == "on" or command == "stop":
-            cmd_str = command
+            cmd_str = command + "\n"
         else:
             cmd_str = f"{vel_left},{vel_right}\n"
         self.ser.write(cmd_str.encode('utf-8'))
