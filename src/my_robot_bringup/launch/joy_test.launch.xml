@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="movement_pkg" exec="joy_velocity_publisher_diferential" name="joy_velocity_publisher" />
-    <node pkg="joy" exec="joy_node" name="joy_node" output="screen"/>
-</launch>

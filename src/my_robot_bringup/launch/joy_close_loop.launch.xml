@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="movement_pkg" exec="joy_cmd_vel_publisher" name="joy_cmd_vel_publisher" />
+    <node pkg="joy" exec="joy_node" name="joy_node" output="screen"/>
+</launch>

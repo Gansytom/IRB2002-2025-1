@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy
-from geometry_msgs.msg import TwistStamped
+from my_robot_interfaces.msg import CmdVel
 from sensor_msgs.msg import Joy
 
 class JoyVelocityPublisher(Node):
@@ -19,7 +19,7 @@ class JoyVelocityPublisher(Node):
         self.joy_status = self.create_subscription(Joy, '/joy', self.joy_callback, QoSReliabilityPolicy.RELIABLE)
 
         # inicia publicadores
-        self.robot_vel = self.create_publisher(TwistStamped, '/motion/cmd_vel', qos_profile)
+        self.robot_vel = self.create_publisher(CmdVel, '/motion/cmd_vel', qos_profile)
         self.nodeName = self.get_name()
         self.get_logger().info(f"{self.nodeName} started")
 
@@ -49,63 +49,37 @@ class JoyVelocityPublisher(Node):
         # RT_axis = msg.axes[5]
         #DIR_X = msg.axes[6] # No se cual es
         #DIR_Y = msg.axes[7] # No se cual es
-        # if A_button:
-        #     self.get_logger().info(f"Button A pressed")
-        # if B_button:
-        #     self.get_logger().info(f"Button B pressed")
-        # if X_button:
-        #     self.get_logger().info(f"Button X pressed")
-        # if Y_button:
-        #     self.get_logger().info(f"Button Y pressed")
-        # if LB_button:
-        #     self.get_logger().info(f"Left bumper pressed")
-        # if RB_button:
-        #     self.get_logger().info(f"Right bumper pressed")
-        # if SELECT_button:
-        #     self.get_logger().info(f"Select button pressed")
-        # if START_button:
-        #     self.get_logger().info(f"Start button pressed")
-        # if LSTICK_button:
-        #     self.get_logger().info(f"Left stick button pressed")
-        # if RSTICK_button:
-        #     self.get_logger().info(f"Right stick button pressed")
         
-        # self.get_logger().info(f"Left stick x: {LSTICK_x_axis}, y: {LSTICK_y_axis}")
-        #self.get_logger().info(f"Right stick x: {RSTICK_x_axis}, y: {RSTICK_y_axis}")
-        #self.get_logger().info(f"Left trigger axis: {LT_axis}, Right trigger axis: {RT_axis}")
-        # self.get_logger().info(f"Direction x: {DIR_X}, y: {DIR_Y}")
         if START_button and not self._turn_on:
             self._turn_on = True
-            self.get_logger().info("Turning on motors ...")
+            self.get_logger().info("Turning on motors ...\n")
             # prepara y publica un mensaje para detener el robot
-            cmd_vel = TwistStamped()
-            cmd_vel.header.frame_id = "on"
-            cmd_vel.twist.linear.x = 0.0
-            cmd_vel.twist.linear.y = 0.0
+            cmd_vel = CmdVel()
+            cmd_vel.command = "on"
+            cmd_vel.left_velocity = 0.0
+            cmd_vel.right_velocity = 0.0
             self.robot_vel.publish(cmd_vel)
             return
         
         if SELECT_button and self._turn_on:
             self._turn_on = False
-            self.get_logger().info("Stopping motors ...")
+            self.get_logger().info("Stopping motors ...\n")
             # prepara y publica un mensaje para detener el robot
-            cmd_vel = TwistStamped()
-            cmd_vel.header.frame_id = "stop"
-            cmd_vel.twist.linear.x = 0.0
-            cmd_vel.twist.linear.y = 0.0
+            cmd_vel = CmdVel()
+            cmd_vel.command= "stop"
+            cmd_vel.left_velocity = 0.0
+            cmd_vel.right_velocity = 0.0
             self.robot_vel.publish(cmd_vel)
             return
             
         if RB_button and self._turn_on:
-            # self.get_logger().info(f"Left axes x: {LSTICK_x_axis}, y: {LSTICK_y_axis}")
-            # self.get_logger().info(f"Right axes x: {RSTICK_x_axis}, y: {RSTICK_y_axis}")
             # prepara y publica un mensaje para la velocidad
-            cmd_vel = TwistStamped()
-            cmd_vel.header.frame_id = "-"
-            cmd_vel.twist.linear.x = LSTICK_y_axis * self._linear_scale
-            cmd_vel.twist.linear.y = RSTICK_y_axis * self._linear_scale
+            cmd_vel = CmdVel()
+            cmd_vel.command = "-"
+            cmd_vel.left_velocity = LSTICK_y_axis * self._linear_scale
+            cmd_vel.right_velocity = RSTICK_y_axis * self._linear_scale
+            self.get_logger().info(f"Publishing: {cmd_vel.left_velocity}, {cmd_vel.right_velocity}\n")
             self.robot_vel.publish(cmd_vel)
-
 
 def main(args=None):
     try:
