@@ -12,7 +12,7 @@ class JoyVelocityPublisher(Node):
         qos_profile = QoSProfile(depth=10)
 
         # define parámetros
-        self._linear_scale = 255
+        self._linear_scale = 100
         self._turn_on = False
 
         # inicia suscriptores
