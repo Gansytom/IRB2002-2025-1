@@ -40,7 +40,7 @@ class MotorDriverNode(Node):
         self.ser.write(cmd_str.encode('utf-8'))
         self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
 
-        #time.sleep(1)
+        time.sleep(1)
 
 def main(args=None):
     rclpy.init(args=args)
