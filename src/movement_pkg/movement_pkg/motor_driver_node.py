@@ -38,9 +38,17 @@ class MotorDriverNode(Node):
         else:
             cmd_str = f"{vel_left},{vel_right}\n"
         self.ser.write(cmd_str.encode('utf-8'))
-        self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
+        #self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
 
         time.sleep(0.1)
+
+    def get_rpm_feedback(self):
+        # Read the RPM feedback from the Arduino
+        if self.ser.in_waiting > 0:
+            line = self.ser.readline().decode('utf-8').rstrip()
+            self.get_logger().info(f"RPM feedback: {line}")
+            return line
+        return None
 
 def main(args=None):
     rclpy.init(args=args)
