@@ -38,6 +38,7 @@ class MotorDriverNode(Node):
         else:
             cmd_str = f"{vel_left},{vel_right}\n"
         self.ser.write(cmd_str.encode('utf-8'))
+        self.get_rpm_feedback()
         #self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
 
         time.sleep(0.1)
