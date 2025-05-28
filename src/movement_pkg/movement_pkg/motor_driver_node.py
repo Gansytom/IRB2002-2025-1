@@ -46,9 +46,11 @@ class MotorDriverNode(Node):
     def get_rpm_feedback(self):
         # Read the RPM feedback from the Arduino
         if self.ser.in_waiting > 0:
-            line = self.ser.readline().decode('utf-8').rstrip()
-            self.get_logger().info(f"RPM feedback: {line}")
-            return line
+            # line = self.ser.readline().decode('utf-8').rstrip()
+            # self.get_logger().info(f"RPM feedback: {line}")
+            raw_line = self.ser.readline()
+            print(f"Raw bytes: {raw_line}")
+            return raw_line
         return None
 
 def main(args=None):
