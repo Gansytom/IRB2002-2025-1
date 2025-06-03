@@ -5,6 +5,7 @@ from rclpy.node import Node
 import serial
 import time
 from my_robot_interfaces.msg import CmdVel
+import threading
 
 class MotorDriverNode(Node):
     def __init__(self):
@@ -13,6 +14,11 @@ class MotorDriverNode(Node):
         time.sleep(2)
         self.ser.reset_input_buffer()
         self.get_logger().info("Serial port opened successfully")
+        # Lock for use ser
+        self.lock = threading.Lock()
+        self.switch = False
+        self.vel_left = 0.0
+        self.vel_right = 0.0
         # Check if the serial port is open
         if not self.ser.is_open:
             self.get_logger().error("Failed to open serial port")
@@ -38,21 +44,27 @@ class MotorDriverNode(Node):
         # Convert the velocity to a string and send it to the Arduino
         if command == "on" or command == "stop":
             cmd_str = command + "\n"
+            self.switch = True if command == "on" else False
         else:
             cmd_str = f"{vel_left},{vel_right}\n"
-        self.ser.write(cmd_str.encode('utf-8'))
-        #self.get_rpm_feedback()
-        #self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
-        self.ser.reset_input_buffer()
+            self.vel_left = vel_left
+            self.vel_right = vel_right
+        with self.lock:
+            self.ser.write(cmd_str.encode('utf-8'))
+            #self.get_rpm_feedback()
+            #self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
+            self.ser.reset_input_buffer()
 
         #time.sleep(0.25)
 
     def get_rpm_feedback(self):
         # Read the RPM feedback from the Arduino
+        self.lock.acquire()
         if self.ser.in_waiting > 0:
             # line = self.ser.readline().decode('utf-8',errors='ignore').rstrip()
             # self.get_logger().info(f"RPM feedback: {line}")
             raw_line = self.ser.readline()
+            self.lock.release()
             try:
                 line = raw_line.decode('utf-8', errors='ignore').rstrip()
                 self.get_logger().info(f"RPM feedback: {line}")
