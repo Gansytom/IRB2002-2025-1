@@ -23,6 +23,7 @@ setup(
             'motor_driver_node = movement_pkg.motor_driver_node:main',
             'terminal_cmd_vel_publisher = movement_pkg.terminal_cmd_vel_publisher:main',
             'joy_cmd_vel_publisher = movement_pkg.joy_cmd_vel_publisher:main',
+            'terminal_cmd_vel_publisher_v2 = movement_pkg.terminal_cmd_vel_publisher_v2:main',
         ],
     },
 )
