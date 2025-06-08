@@ -56,9 +56,6 @@ class MotorDriverNode(Node):
         # Read the RPM feedback from the Arduino
         if self.ser.in_waiting > 0:
             with self.lock:
-                # Read a line from the serial port
-                # Using decode with 'utf-8' and ignoring errors to handle non-UTF-8 data
-                # This is useful if the Arduino sends binary data or non-UTF-8 encoded strings
                 # line = self.ser.readline().decode('utf-8',errors='ignore').rstrip()
                 # self.get_logger().info(f"RPM feedback: {line}")
                 raw_line = self.ser.readline()
