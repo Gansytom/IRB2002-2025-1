@@ -12,19 +12,19 @@ class MotorDriverNode(Node):
         super().__init__("motor_driver_node")
 
         # ----- Initialize the serial port -----
-        # self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
-        # time.sleep(1)
-        # self.ser.reset_input_buffer()
-        # self.get_logger().info("Serial port opened successfully")
-        # if not self.ser.is_open:
-        #     self.get_logger().error("Failed to open serial port")
-        #     return
+        self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+        time.sleep(1)
+        self.ser.reset_input_buffer()
+        self.get_logger().info("Serial port opened successfully")
+        if not self.ser.is_open:
+            self.get_logger().error("Failed to open serial port")
+            return
 
         # ----- Timers, publishers, suscribers and services -----
         self.set_led_service_ = self.create_service(
             SetCmdVel, "set_vel", self.callback_set_vel)
-        #self.rpm_feedback_timer = self.create_timer(
-        #    0.2, self.get_rpm_feedback)
+        self.rpm_feedback_timer = self.create_timer(
+           0.2, self.get_rpm_feedback)
         self.get_logger().info("Motor driver node started")
 
         # ----- Parameters -----
@@ -45,8 +45,8 @@ class MotorDriverNode(Node):
             cmd_str = command + "\n"
         else:
             cmd_str = f"{command},{vel_left},{vel_right}\n"
-        #self.ser.write(cmd_str.encode('utf-8'))
-        #self.ser.reset_input_buffer()
+        self.ser.write(cmd_str.encode('utf-8'))
+        self.ser.reset_input_buffer()
         self.get_logger().info(f"Sending command to Arduino: {cmd_str.strip()}")
 
         time.sleep(0.1)
