@@ -290,7 +290,11 @@ void verificarComando() {
     //Resetear valores para nueva velocidad
     integral1 = 0;
     integral2 = 0;
+    integral3 = 0;
+    integral4 = 0;
     error_previo1 = 0; 
     error_previo2 = 0; 
+    error_previo3 = 0; 
+    error_previo4 = 0; 
     }
   }
