@@ -11,7 +11,7 @@ class MotorDriverNode(Node):
     def __init__(self):
         super().__init__("motor_driver_node")
         self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
-        time.sleep(2)
+        time.sleep(2)   
         self.ser.reset_input_buffer()
         self.get_logger().info("Serial port opened successfully")
         # Lock for use ser
