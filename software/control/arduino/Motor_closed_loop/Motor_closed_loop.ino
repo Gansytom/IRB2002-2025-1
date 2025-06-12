@@ -117,7 +117,7 @@ if (tiempoActual - tiempoAnterior >= intervaloMuestreo) {
     //Salida PID 1
 
     output1 = Kp1 * error1 + Ki1 * integral1 + Kd1 * derivada1;
-    output1 = constrain(output1, 0, 255); //Limitar PID a rango de PWM de analogWrite
+    output1 = constrain(output1, 0, 100); //Limitar PID a rango de PWM de analogWrite
   
     //Cálculos PID 2
     float error2 = abs(velocidad_ref_L) - velocidadRPM_encoder2;
@@ -127,7 +127,7 @@ if (tiempoActual - tiempoAnterior >= intervaloMuestreo) {
     //Salida PID 2
 
     output2 = Kp2 * error2 + Ki2 * integral2 + Kd2 * derivada2;
-    output2 = constrain(output2, 0, 255); //Limitar PID a rango de PWM de analogWrite
+    output2 = constrain(output2, 0, 100); //Limitar PID a rango de PWM de analogWrite
 
    //Establecer valores para próximo muestreo
     contadorPulsos_encoder1 = 0;
