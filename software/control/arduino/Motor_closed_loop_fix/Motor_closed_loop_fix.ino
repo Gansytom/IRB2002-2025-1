@@ -17,11 +17,11 @@ volatile unsigned int contadorPulsos_encoder2 = 0;
 const int PULSOS_POR_REV = 480;
 
 // PID parámetros motor L
-float Kp1 = 1.0, Ki1 = 2.5, Kd1 = 0.0;
+float Kp1 = 0.5, Ki1 = 2.5, Kd1 = 0.0;
 float error_previo1 = 0, integral1 = 0;
 
 // PID parámetros motor R
-float Kp2 = 1.0, Ki2 = 2.5, Kd2 = 0.0;
+float Kp2 = 0.5, Ki2 = 2.5, Kd2 = 0.0;
 float error_previo2 = 0, integral2 = 0;
 
 // Referencias de velocidad
@@ -29,6 +29,7 @@ float velocidad_ref_L = 0, velocidad_ref_R = 0;
 float velocidad_ref_L_deseada = 0, velocidad_ref_R_deseada = 0;
 float velocidad_pala_ref_L = 0, velocidad_pala_ref_R = 0;
 float output1 = 0, output2 = 0;
+int velocidad_limite = 100;  
 
 // Interpolación
 const float incrementoMaximo = 5.0; // RPM por ciclo
@@ -81,7 +82,7 @@ void loop() {
     integral1 += error1 * deltaTiempo;
     float derivada1 = (error1 - error_previo1) / deltaTiempo;
     float salida_sin_constrain1 = Kp1 * error1 + Ki1 * integral1 + Kd1 * derivada1;
-    output1 = constrain(salida_sin_constrain1, 0, 100);
+    output1 = constrain(salida_sin_constrain1, 0, 255);
     if (output1 != salida_sin_constrain1) integral1 -= error1 * deltaTiempo; // Anti-windup
     error_previo1 = error1;
 
@@ -90,7 +91,7 @@ void loop() {
     integral2 += error2 * deltaTiempo;
     float derivada2 = (error2 - error_previo2) / deltaTiempo;
     float salida_sin_constrain2 = Kp2 * error2 + Ki2 * integral2 + Kd2 * derivada2;
-    output2 = constrain(salida_sin_constrain2, 0, 100);
+    output2 = constrain(salida_sin_constrain2, 0, 255);
     if (output2 != salida_sin_constrain2) integral2 -= error2 * deltaTiempo; // Anti-windup
     error_previo2 = error2;
 
@@ -122,15 +123,15 @@ void loop() {
 
   // Aplicar PWM
   if (velocidad_ref_L >= 0) {
-    analogWrite(LR_PWM, output1); analogWrite(LL_PWM, 0);
-  } else {
     analogWrite(LR_PWM, 0); analogWrite(LL_PWM, output1);
+  } else {
+    analogWrite(LR_PWM, output1); analogWrite(LL_PWM, 0);
   }
 
   if (velocidad_ref_R >= 0) {
-    analogWrite(RR_PWM, output2); analogWrite(RL_PWM, 0);
-  } else {
     analogWrite(RR_PWM, 0); analogWrite(RL_PWM, output2);
+  } else {
+    analogWrite(RR_PWM, output2); analogWrite(RL_PWM, 0);
   }
 
   verificarComando(); // Leer comandos desde Serial
@@ -139,6 +140,7 @@ void loop() {
 void verificarComando() {
   if (Serial.available()) {
     String comando = Serial.readStringUntil('\n');
+    Serial.println(comando);
     comando.trim();
 
     if (comando == "on") {
@@ -157,6 +159,18 @@ void verificarComando() {
         velocidad_ref_R_deseada = comando.substring(lastComa + 1).toInt();
         velocidad_pala_ref_L = 0;
         velocidad_pala_ref_R = 0;
+        if (velocidad_ref_L > velocidad_limite){
+        velocidad_ref_L = velocidad_limite;
+        }
+        else if (velocidad_ref_L < -velocidad_limite){
+          velocidad_ref_L = -velocidad_limite;
+        }
+        if (velocidad_ref_R > velocidad_limite){
+          velocidad_ref_R = velocidad_limite;
+        }
+        else if (velocidad_ref_R < -velocidad_limite){
+          velocidad_ref_R = -velocidad_limite;
+        }
         Serial.print(velocidad_ref_L_deseada);
         Serial.print(",");
         Serial.println(velocidad_ref_R_deseada);
