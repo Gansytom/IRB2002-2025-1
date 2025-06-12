@@ -46,10 +46,9 @@ class MotorDriverNode(Node):
         else:
             cmd_str = f"{command},{vel_left},{vel_right}\n"
         
-        with self.lock:
-            self.ser.write(cmd_str.encode('utf-8'))
-            self.ser.reset_input_buffer()
-            self.get_logger().info(f"Sending command to Arduino: {cmd_str.strip()}")
+        self.ser.write(cmd_str.encode('utf-8'))
+        self.ser.reset_input_buffer()
+        self.get_logger().info(f"Sending command to Arduino: {cmd_str.strip()}")
 
         # ----- Retry mechanism first idea -----
         # with self.lock:
