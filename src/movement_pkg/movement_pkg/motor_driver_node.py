@@ -34,7 +34,9 @@ class MotorDriverNode(Node):
 
         self.create_timer(0.2, self.get_rpm_feedback)
 
-        self.get_logger().info("Motor controller node started")  
+        self.get_logger().info("Motor controller node started") 
+
+        self.lock = threading.Lock()
     
     def cmd_vel_callback(self, msg):
         command = msg.command
@@ -47,6 +49,7 @@ class MotorDriverNode(Node):
             self.switch = True if command == "on" else False
         else:
             cmd_str = f"{vel_left},{vel_right}\n"
+<<<<<<< robot
             self.vel_left = vel_left
             self.vel_right = vel_right
         with self.lock:
@@ -54,24 +57,38 @@ class MotorDriverNode(Node):
             #self.get_rpm_feedback()
             #self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
             self.ser.reset_input_buffer()
+=======
+>>>>>>> main
 
-        #time.sleep(0.25)
+        with self.lock:
+            self.ser.write(cmd_str.encode('utf-8'))
+            #self.get_rpm_feedback()
+            #self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
+            self.ser.reset_input_buffer()
+
+        time.sleep(0.1)
 
     def get_rpm_feedback(self):
         # Read the RPM feedback from the Arduino
         self.lock.acquire()
         if self.ser.in_waiting > 0:
+<<<<<<< robot
             # line = self.ser.readline().decode('utf-8',errors='ignore').rstrip()
             # self.get_logger().info(f"RPM feedback: {line}")
             raw_line = self.ser.readline()
             self.lock.release()
             try:
+=======
+            with self.lock:
+                # line = self.ser.readline().decode('utf-8',errors='ignore').rstrip()
+                # self.get_logger().info(f"RPM feedback: {line}")
+                raw_line = self.ser.readline()
+                
+>>>>>>> main
                 line = raw_line.decode('utf-8', errors='ignore').rstrip()
                 self.get_logger().info(f"RPM feedback: {line}")
                 return line
-            except UnicodeDecodeError as e:
-                self.get_logger().error(f"Decode error: {e}")
-                self.get_logger().error(f"Raw line (bytes): {raw_line}")
+            
                 # self.get_logger().error("Failed to decode RPM feedback. Raw data may not be UTF-8 encoded.")
                 # # Log the raw line in hex and repr for debugging
                 # self.get_logger().error(f"Raw line (hex): {raw_line.hex()}")

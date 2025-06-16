@@ -35,7 +35,9 @@ float integral2 = 0;
 
 // Variables PID
 float velocidad_ref_L = 0;    
-float velocidad_ref_R = 0;  
+float velocidad_ref_R = 0; 
+float velocidad_pala_ref_L = 0;    
+float velocidad_pala_ref_R = 0;  
 float output1 = 0;   
 float output2 = 0; 
 
@@ -115,7 +117,7 @@ if (tiempoActual - tiempoAnterior >= intervaloMuestreo) {
     //Salida PID 1
 
     output1 = Kp1 * error1 + Ki1 * integral1 + Kd1 * derivada1;
-    output1 = constrain(output1, 0, 255); //Limitar PID a rango de PWM de analogWrite
+    output1 = constrain(output1, 0, 100); //Limitar PID a rango de PWM de analogWrite
   
     //Cálculos PID 2
     float error2 = abs(velocidad_ref_L) - velocidadRPM_encoder2;
@@ -125,7 +127,7 @@ if (tiempoActual - tiempoAnterior >= intervaloMuestreo) {
     //Salida PID 2
 
     output2 = Kp2 * error2 + Ki2 * integral2 + Kd2 * derivada2;
-    output2 = constrain(output2, 0, 255); //Limitar PID a rango de PWM de analogWrite
+    output2 = constrain(output2, 0, 100); //Limitar PID a rango de PWM de analogWrite
 
    //Establecer valores para próximo muestreo
     contadorPulsos_encoder1 = 0;
@@ -174,12 +176,24 @@ void verificarComando() {
       digitalWrite(RELAY_PIN, LOW);
       Serial.println("Emergency Stop");
     } else if (comando.indexOf(",") > 0){
-      int comaIndex = comando.indexOf(",");
-      velocidad_ref_L = comando.substring(0, comaIndex).toInt();
-      velocidad_ref_R = comando.substring(comaIndex + 1).toInt();
-      Serial.print(velocidad_ref_L);
-      Serial.print(",");
-      Serial.println(velocidad_ref_R);
+      int firstComaIndex = comando.indexOf(",");
+      int lastComaIndex = comando.lastIndexOf(",");
+      String accion = comando.substring(0, firstComaIndex);
+      if (accion == "move") {
+        velocidad_ref_L = comando.substring(firstComaIndex + 1, lastComaIndex).toInt();
+        velocidad_ref_R = comando.substring(lastComaIndex + 1).toInt();
+        velocidad_pala_ref_L = 0;
+        velocidad_pala_ref_R = 0;
+        
+        Serial.print(velocidad_ref_L);
+        Serial.print(",");
+        Serial.println(velocidad_ref_R);
+      } else if (accion = "shovel"){
+        velocidad_ref_L = 0;
+        velocidad_ref_R = 0;
+        velocidad_pala_ref_L = comando.substring(firstComaIndex + 1, lastComaIndex).toInt();
+        velocidad_pala_ref_R = comando.substring(lastComaIndex + 1).toInt();
+        }
     }
 
     //Resetear valores para nueva velocidad
@@ -189,4 +203,3 @@ void verificarComando() {
     error_previo2 = 0; 
     }
   }
-
