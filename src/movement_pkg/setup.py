@@ -26,6 +26,7 @@ setup(
             'joy_cmd_vel_publisher = movement_pkg.joy_cmd_vel_publisher:main',
             'terminal_cmd_vel_publisher_v2 = movement_pkg.terminal_cmd_vel_publisher_v2:main',
             'motion_planner_node = movement_pkg.motion_planner_node:main',
+            'camera_controller_node = movement_pkg.camera_controller_node:main',
         ],
     },
 )
