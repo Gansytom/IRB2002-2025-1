@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="movement_pkg" exec="motion_planner_node" name="motion_planner_node" />
+    <node pkg="movement_pkg" exec="motor_driver_node_v2" name="motor_driver_node" />
+</launch>
