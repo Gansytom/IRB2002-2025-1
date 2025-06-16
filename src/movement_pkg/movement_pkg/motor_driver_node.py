@@ -11,9 +11,14 @@ class MotorDriverNode(Node):
     def __init__(self):
         super().__init__("motor_driver_node")
         self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
-        time.sleep(2)
+        time.sleep(2)   
         self.ser.reset_input_buffer()
         self.get_logger().info("Serial port opened successfully")
+        # Lock for use ser
+        self.lock = threading.Lock()
+        self.switch = False
+        self.vel_left = 0.0
+        self.vel_right = 0.0
         # Check if the serial port is open
         if not self.ser.is_open:
             self.get_logger().error("Failed to open serial port")
@@ -41,8 +46,19 @@ class MotorDriverNode(Node):
         # Convert the velocity to a string and send it to the Arduino
         if command == "on" or command == "stop":
             cmd_str = command + "\n"
+            self.switch = True if command == "on" else False
         else:
             cmd_str = f"{vel_left},{vel_right}\n"
+<<<<<<< robot
+            self.vel_left = vel_left
+            self.vel_right = vel_right
+        with self.lock:
+            self.ser.write(cmd_str.encode('utf-8'))
+            #self.get_rpm_feedback()
+            #self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
+            self.ser.reset_input_buffer()
+=======
+>>>>>>> main
 
         with self.lock:
             self.ser.write(cmd_str.encode('utf-8'))
@@ -54,12 +70,21 @@ class MotorDriverNode(Node):
 
     def get_rpm_feedback(self):
         # Read the RPM feedback from the Arduino
+        self.lock.acquire()
         if self.ser.in_waiting > 0:
+<<<<<<< robot
+            # line = self.ser.readline().decode('utf-8',errors='ignore').rstrip()
+            # self.get_logger().info(f"RPM feedback: {line}")
+            raw_line = self.ser.readline()
+            self.lock.release()
+            try:
+=======
             with self.lock:
                 # line = self.ser.readline().decode('utf-8',errors='ignore').rstrip()
                 # self.get_logger().info(f"RPM feedback: {line}")
                 raw_line = self.ser.readline()
                 
+>>>>>>> main
                 line = raw_line.decode('utf-8', errors='ignore').rstrip()
                 self.get_logger().info(f"RPM feedback: {line}")
                 return line

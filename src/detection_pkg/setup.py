@@ -25,6 +25,7 @@ setup(
             'prediction_node = detection_pkg.prediction_node:main',
             'yolov8_node = detection_pkg.yolov8_node:main',
             'yolov11_node = detection_pkg.yolov11_node:main',
+            'detection_recive = detection_pkg.detection_recive:main',
         ],
     },
 )

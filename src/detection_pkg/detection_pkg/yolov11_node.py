@@ -3,13 +3,13 @@ import rclpy
 from rclpy.qos import qos_profile_sensor_data
 from rclpy.node import Node
 import cv2
-import os
-import sys
 import time
-from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import numpy as np
 from ultralytics import YOLO
+from sensor_msgs.msg import CompressedImage
+from yolo_msg.msg import Bottle, BottleArray
+from geometry_msgs.msg import Point
 
 
 class PredictionNode(Node):
@@ -17,10 +17,13 @@ class PredictionNode(Node):
         super().__init__("prediction_node")
         self.bridge = CvBridge()
 
+        # Create publicher for Object detected
+        self.publisher_ = self.create_publisher(BottleArray, "/bottle_detections", qos_profile=qos_profile_sensor_data)
+
         # Create a suscriber for images
         self.img_suscriber_ = self.create_subscription(
-            Image,
-            "camera_topic",
+            CompressedImage,
+            "/camera/image/compressed",            
             self.img_callback,
             qos_profile=qos_profile_sensor_data
         )
@@ -29,7 +32,7 @@ class PredictionNode(Node):
         self.annotated_frame = None
         self.results = None
 
-        model_path = "IRB2002-2025-1/src/detection_pkg/detection_pkg/best.pt"
+        model_path = "ros2_ws/src/camera/camera/best_yolo11.pt"
         #model_path = "IRB2002-2025-1/src/detection_pkg/detection_pkg/best_yolo11_ncnn_model"
         self.model = YOLO(model_path)
         self.labels = ["Botellas"]
@@ -47,7 +50,9 @@ class PredictionNode(Node):
     def img_callback(self, msg):
         t_start = time.perf_counter()
         # Convert the ROS Image message to OpenCV format
-        frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+        np_arr = np.frombuffer(msg.data, np.uint8)
+        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        # frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
         # Run inference on frame
         results = self.model(frame, verbose=False)
@@ -59,14 +64,21 @@ class PredictionNode(Node):
         # Initialize variable for basic object counting example
         object_count = 0
 
-        # Go through each detection and get bbox coords, confidence, and class
-        for i in range(len(detections)):
+        pub_msg = BottleArray()
 
+        # Go through each detection and get bbox coords, confidence, and class
+        id = 0
+        for i in range(len(detections)):
+            bottle = Bottle()
             # Get bounding box coordinates
             # Ultralytics returns results in Tensor format, which have to be converted to a regular Python array
             xyxy_tensor = detections[i].xyxy.cpu() # Detections in Tensor format in CPU memory
             xyxy = xyxy_tensor.numpy().squeeze() # Convert tensors to Numpy array
             xmin, ymin, xmax, ymax = xyxy.astype(int) # Extract individual coordinates and convert to int
+
+            x = abs(xmin - xmax)/2
+            y = abs(ymin - ymax)/2
+            z = 0.0
 
             # Get bounding box class ID and name
             classidx = int(detections[i].cls.item())
@@ -75,6 +87,12 @@ class PredictionNode(Node):
             # Get bounding box confidence
             conf = detections[i].conf.item()
 
+            
+            bottle.id = id
+            id += 1
+            bottle.probability = conf
+            bottle.position = Point(x=x, y=y, z=z)
+            pub_msg.bottles.append(bottle)
             # Draw box if confidence threshold is high enough
             if conf > 0.5:
 
@@ -112,6 +130,12 @@ class PredictionNode(Node):
 
         # Calculate average FPS for past frames
         self.avg_frame_rate = np.mean(self.frame_rate_buffer)
+        pub_msg.number = id
+        self.publisher_.publish(pub_msg)
+        
+
+
+
     
         
 
