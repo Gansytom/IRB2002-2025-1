@@ -15,7 +15,7 @@ public:
     // publisher_ = it.advertise("camera/image_compressed", 10);
 
 
-    cap_.open(0, cv::CAP_V4L2);  // Abrir cámara con backend V4L2 (Linux)
+    cap_.open(2, cv::CAP_V4L2);  // Abrir cámara con backend V4L2 (Linux)
     if (!cap_.isOpened()) {
       RCLCPP_ERROR(this->get_logger(), "No se pudo abrir la cámara.");
       return;
