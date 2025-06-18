@@ -8,11 +8,23 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/CmdVel.msg"
-  "srv/SetCmdVel.srv"
+find_package(geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
- )
+set(msg_files
+  "msg/CmdVel.msg"
+  "msg/Bottle.msg"
+  "msg/BottleArray.msg"
+  )
+
+set(srv_files
+  "srv/SetCmdVel.srv"
+  )
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  ${srv_files}
+)
 
 ament_export_dependencies(rosidl_default_runtime)
 
