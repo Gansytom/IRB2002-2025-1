@@ -34,47 +34,62 @@ class CameraControllerNode(Node):
         )
         self.publisher = self.create_publisher(CmdVel, "motion/cmd_vel", 10)
         # ----- Parameters -----
-        #self.cap = cv2.VideoCapture(1, cv2.CAP_V4L)
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
-        #cv2.namedWindow("Camera")
-        #cv2.setMouseCallback("Camera", self.mouse_callback)
-
-        #self.timer = self.create_timer(0.1, self.timer_callback)
-        #self.get_logger().info("Camera node started")
         self.base_speed = 40
-        self.align_threshold = 15  # Threshold for alignment correction
+        self.align_threshold = 15
 
-    # def timer_callback(self):
-    #     # ret, img = self.cap.read()
-    #     # if not ret or img is None:
-    #     #     self.get_logger().error("Failed to read image from camera")
-    #     #     return
+        self.tracked_target = None
+        self.tracking_counter = 0
+        self.tracking_max_lost = 10
+        self.tracking_lost_counter = 0
+        self.tracking_confirm_threshold = 5
+        self.last_detection = None
 
-    #     # Lee la imagen desde archivo
-    #     img = cv2.imread("/home/tomy/IRB2002-2025-1/src/movement_pkg/movement_pkg/arena_v1_00799.jpg")
-    #     if img is None:
-    #         self.get_logger().error("No se pudo leer la imagen arena_v1_00799.jpg")
-    #         return
-    #     cv_image = cv2.resize(img, (640, 480))
-    #     self.process_results(self.target, cv_image)
+    def prediction_callback(self, msg): # Callback for the prediction subscriber
+        if not msg.bottles:
+            self.tracking_lost_counter += 1
+            if self.tracking_lost_counter > self.tracking_max_lost:
+                self.tracked_target = None
+                self.tracking_counter = 0
+            return
 
-    def mouse_callback(self, event, x, y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.target = (x, y)
-            self.get_logger().info(f"Nuevo target seleccionado: {self.target}")
+        # Choose the bottle with the largest area as the candidate
+        candidate = max(msg.bottles, key=lambda b: b.width * b.height)
+        
+        if self.tracked_target is None:
+            if self.last_detection and self.is_near(candidate, self.last_detection, threshold=40):
+                self.tracking_counter += 1
+            else:
+                self.tracking_counter = 1
+            self.last_detection = candidate
 
-    def prediction_callback(self, msg):
-        for prediction in msg.bottles:
-            self.process_results(prediction)
+            if self.tracking_counter >= self.tracking_confirm_threshold:
+                self.tracked_target = candidate
+                self.tracking_lost_counter = 0
+                self.process_results(candidate)
+        else:
+            closest = min(msg.bottles, key=lambda b: self.distance(b, self.tracked_target))
+            if self.is_near(closest, self.tracked_target, threshold=60):
+                self.tracked_target = closest
+                self.tracking_lost_counter = 0
+                self.process_results(closest)
+            else:
+                self.tracking_lost_counter += 1
+                if self.tracking_lost_counter > self.tracking_max_lost:
+                    self.tracked_target = None
+                    self.tracking_counter = 0
+        
+    def distance(self, a, b):
+        return np.hypot(a.x - b.x, a.y - b.y)
 
-    def process_results(self, target):
-        # if self.target is None:
-        #     cv2.imshow("Camera", cv_image)
-        #     cv2.waitKey(1)
-        #     return
+    def is_near(self, a, b, threshold=40):
+        return self.distance(a, b) < threshold
 
+    def process_results(self, target): # Process the results from the prediction
+        self.get_logger().info(f"Tracking target: {target.id} at ({target.x}, {target.y}) with area {target.width * target.height}")
+        
         img_center_x = target.width // 2
         img_center_y = target.height // 2
         error = target.x - img_center_x
@@ -101,12 +116,6 @@ class CameraControllerNode(Node):
         cmd.left_velocity = float(left_vel)
         cmd.right_velocity = float(right_vel)
         self.publisher.publish(cmd)
-
-        # cv2.circle(cv_image, self.target, 5, (0, 0, 255), -1)
-        # cv2.line(cv_image, (self.img_center_x, 0), (self.img_center_x, cv_image.shape[0]), (255, 0, 0), 2)
-        # cv2.line(cv_image, (0, self.img_center_y), (cv_image.shape[1], self.img_center_y), (0, 255, 0), 2)
-        # cv2.imshow("Camera", cv_image)
-        # cv2.waitKey(1)
 
 
 def main(args=None):
