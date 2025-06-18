@@ -8,8 +8,7 @@ from cv_bridge import CvBridge
 import numpy as np
 from ultralytics import YOLO
 from sensor_msgs.msg import CompressedImage
-from yolo_msg.msg import Bottle, BottleArray
-from geometry_msgs.msg import Point
+from my_robot_interfaces.msg import Bottle, BottleArray
 
 
 class PredictionNode(Node):
@@ -32,7 +31,7 @@ class PredictionNode(Node):
         self.annotated_frame = None
         self.results = None
 
-        model_path = "ros2_ws/src/camera/camera/best_yolo11.pt"
+        model_path = "/home/tomy/IRB2002-2025-1/src/detection_pkg/detection_pkg/best_yolo11.pt"
         #model_path = "IRB2002-2025-1/src/detection_pkg/detection_pkg/best_yolo11_ncnn_model"
         self.model = YOLO(model_path)
         self.labels = ["Botellas"]
@@ -52,18 +51,15 @@ class PredictionNode(Node):
         # Convert the ROS Image message to OpenCV format
         np_arr = np.frombuffer(msg.data, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        width = frame.shape[0]
+        height = frame.shape[1]
         # frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
         # Run inference on frame
         results = self.model(frame, verbose=False)
-        #annotated_frame = self.results[0].plot()
-
-        # Extract results
         detections = results[0].boxes
 
-        # Initialize variable for basic object counting example
         object_count = 0
-
         pub_msg = BottleArray()
 
         # Go through each detection and get bbox coords, confidence, and class
@@ -78,7 +74,6 @@ class PredictionNode(Node):
 
             x = abs(xmin - xmax)/2
             y = abs(ymin - ymax)/2
-            z = 0.0
 
             # Get bounding box class ID and name
             classidx = int(detections[i].cls.item())
@@ -91,10 +86,13 @@ class PredictionNode(Node):
             bottle.id = id
             id += 1
             bottle.probability = conf
-            bottle.position = Point(x=x, y=y, z=z)
+            bottle.x = x
+            bottle.y = y
+            bottle.width = width
+            bottle.height = height
             pub_msg.bottles.append(bottle)
             # Draw box if confidence threshold is high enough
-            if conf > 0.5:
+            if conf > 0.7:
 
                 color = self.bbox_colors[classidx % 10]
                 cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), color, 2)
@@ -132,11 +130,6 @@ class PredictionNode(Node):
         self.avg_frame_rate = np.mean(self.frame_rate_buffer)
         pub_msg.number = id
         self.publisher_.publish(pub_msg)
-        
-
-
-
-    
         
 
 def main(args=None):
