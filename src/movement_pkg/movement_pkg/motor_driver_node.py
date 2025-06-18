@@ -49,7 +49,6 @@ class MotorDriverNode(Node):
             self.switch = True if command == "on" else False
         else:
             cmd_str = f"{vel_left},{vel_right}\n"
-<<<<<<< robot
             self.vel_left = vel_left
             self.vel_right = vel_right
         with self.lock:
@@ -57,8 +56,6 @@ class MotorDriverNode(Node):
             #self.get_rpm_feedback()
             #self.get_logger().info(f"Velocidades enviadas: {cmd_str.strip()}")
             self.ser.reset_input_buffer()
-=======
->>>>>>> main
 
         with self.lock:
             self.ser.write(cmd_str.encode('utf-8'))
@@ -72,22 +69,14 @@ class MotorDriverNode(Node):
         # Read the RPM feedback from the Arduino
         self.lock.acquire()
         if self.ser.in_waiting > 0:
-<<<<<<< robot
             # line = self.ser.readline().decode('utf-8',errors='ignore').rstrip()
             # self.get_logger().info(f"RPM feedback: {line}")
             raw_line = self.ser.readline()
             self.lock.release()
-            try:
-=======
-            with self.lock:
-                # line = self.ser.readline().decode('utf-8',errors='ignore').rstrip()
-                # self.get_logger().info(f"RPM feedback: {line}")
-                raw_line = self.ser.readline()
-                
->>>>>>> main
-                line = raw_line.decode('utf-8', errors='ignore').rstrip()
-                self.get_logger().info(f"RPM feedback: {line}")
-                return line
+            
+            line = raw_line.decode('utf-8', errors='ignore').rstrip()
+            self.get_logger().info(f"RPM feedback: {line}")
+            return line
             
                 # self.get_logger().error("Failed to decode RPM feedback. Raw data may not be UTF-8 encoded.")
                 # # Log the raw line in hex and repr for debugging
