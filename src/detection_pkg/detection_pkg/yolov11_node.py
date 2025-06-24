@@ -30,7 +30,7 @@ class PredictionNode(Node):
         self.annotated_frame = None
         self.results = None
 
-        model_path = "/home/tomy/IRB2002-2025-1/src/detection_pkg/detection_pkg/best_yolo11.pt"
+        model_path = "/home/tomy/IRB2002-2025-1/src/detection_pkg/detection_pkg/modelo.pt"
         #model_path = "IRB2002-2025-1/src/detection_pkg/detection_pkg/best_yolo11_ncnn_model"
         self.model = YOLO(model_path)
         self.labels = ["Botellas"]
@@ -49,8 +49,8 @@ class PredictionNode(Node):
         # Convert the ROS Image message to OpenCV format
         np_arr = np.frombuffer(msg.data, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-        width = frame.shape[1]
-        height = frame.shape[0]
+        img_width = frame.shape[1]
+        img_height = frame.shape[0]
         # frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
         # Run inference on frame
@@ -69,6 +69,8 @@ class PredictionNode(Node):
             xyxy = xyxy_tensor.numpy().squeeze() # Convert tensors to Numpy array
             xmin, ymin, xmax, ymax = xyxy.astype(int) # Extract individual coordinates and convert to int
 
+            width = int(abs(xmax - xmin))
+            height = int(abs(ymax - ymin))
             x = abs(xmin - xmax)/2
             y = abs(ymin - ymax)/2
 
@@ -87,9 +89,11 @@ class PredictionNode(Node):
             bottle.y = ymin + y
             bottle.width = width
             bottle.height = height
+            bottle.img_width = img_width
+            bottle.img_height = img_height
             pub_msg.bottles.append(bottle)
             # Draw box if confidence threshold is high enough
-            if conf > 0.75:
+            if conf > 0.45:
 
                 color = self.bbox_colors[classidx % 10]
                 cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), color, 2)
