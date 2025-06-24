@@ -32,17 +32,21 @@ class CameraControllerNode(Node):
             self.prediction_callback,
             qos_profile_sensor_data
         )
-        self.publisher = self.create_publisher(CmdVel, "motion/cmd_vel", 10)
+        self.cmd_publisher = self.create_publisher(CmdVel, "motion/cmd_vel", 10)
         # ----- Parameters -----
+        self.state = None
+        self.y_distance_factor = 0.7
+        self.x_distance_factor = 1 - self.y_distance_factor
+        self.align_threshold = 50
+
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
         self.base_speed = 40
-        self.align_threshold = 15
 
         self.tracked_target = None
         self.tracking_counter = 0
-        self.tracking_max_lost = 10
+        self.tracking_max_lost = 20
         self.tracking_lost_counter = 0
         self.tracking_confirm_threshold = 5
         self.last_detection = None
@@ -55,11 +59,14 @@ class CameraControllerNode(Node):
                 self.tracking_counter = 0
             return
 
-        # Choose the bottle with the largest area as the candidate
-        candidate = max(msg.bottles, key=lambda b: b.width * b.height)
-        
+        # Choose the bottle with min distance to the bottom of the image and min distance to the center
+        candidate = min(msg.bottles, key=lambda 
+                        b: self.y_distance_factor*(b.img_height - b.y) 
+                        + self.x_distance_factor*abs(b.x - (b.img_width // 2))
+        )
+
         if self.tracked_target is None:
-            if self.last_detection and self.is_near(candidate, self.last_detection, threshold=40):
+            if self.last_detection is not None and self.is_near(candidate, self.last_detection, threshold=40):
                 self.tracking_counter += 1
             else:
                 self.tracking_counter = 1
@@ -90,8 +97,8 @@ class CameraControllerNode(Node):
     def process_results(self, target): # Process the results from the prediction
         self.get_logger().info(f"Tracking target: {target.id} at ({target.x}, {target.y}) with area {target.width * target.height}")
         
-        img_center_x = target.width // 2
-        img_center_y = target.height // 2
+        img_center_x = target.img_width // 2
+        img_center_y = target.img_height // 2
         error = target.x - img_center_x
 
         now = self.get_clock().now().nanoseconds / 1e9
@@ -100,22 +107,35 @@ class CameraControllerNode(Node):
 
         correction = self.pid.compute(error, dt)
 
+        # Set the state based on the target position
+        is_aligned = abs(target.x - img_center_x) < self.align_threshold
+        is_close = target.y > img_center_y
+        if not is_close:
+            self.state = "align_forward"
+        elif is_close and not is_aligned:
+            self.state = "align_backward"
+        elif is_close and is_aligned:
+            self.state = "use_shovel"
 
-        if target.y < img_center_y or \
-            target.x > img_center_x - self.align_threshold and \
-            target.x < img_center_x + self.align_threshold:
-
+        # Set the command based on the state
+        cmd = CmdVel()
+        if self.state == "align_forward":
+            command = "move"
             left_vel = self.base_speed + correction
             right_vel = self.base_speed - correction
-        else:
+        elif self.state == "align_backward":
+            command = "move"
             left_vel = -(self.base_speed - correction)
             right_vel = -(self.base_speed + correction)
+        elif self.state == "use_shovel":
+            command = "shovel"
+            left_vel = 50.0
+            right_vel = 50.0
 
-        cmd = CmdVel()
-        cmd.command = "move"
+        cmd.command = command
         cmd.left_velocity = float(left_vel)
         cmd.right_velocity = float(right_vel)
-        self.publisher.publish(cmd)
+        self.cmd_publisher.publish(cmd)
 
 
 def main(args=None):
