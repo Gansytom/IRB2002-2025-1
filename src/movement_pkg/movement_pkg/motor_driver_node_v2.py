@@ -68,7 +68,8 @@ class MotorDriverNode(Node):
                         #self.get_logger().info(f"Command acknowledged by Arduino: {line}")
                         return  # Éxito, salimos de la función
                     else:
-                        self.get_logger().warning(f"Unexpected response: {line}")
+                        pass
+                        #self.get_logger().warning(f"Unexpected response: {line}")
 
             # Si no hubo respuesta o fue incorrecta, reintentamos
             #self.get_logger().warning(f"No ack from Arduino, retrying in {retry_delay} sec...")
