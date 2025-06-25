@@ -85,7 +85,8 @@ class MotorDriverNode(Node):
             with self.lock:
                 raw_line = self.ser.readline()
                 line = raw_line.decode('utf-8', errors='ignore').rstrip()
-                self.get_logger().info(f"RPM feedback: {line}")
+                if "Velocidad" in line:
+                    self.get_logger().info(f"RPM feedback: {line}")
                 return line
         return None
 
