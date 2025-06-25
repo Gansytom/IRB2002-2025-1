@@ -46,25 +46,7 @@ class MotorDriverNode(Node):
         else:
             cmd_str = f"{command},{vel_left},{vel_right}\n"
         
-        # self.ser.write(cmd_str.encode('utf-8'))
-        # self.ser.reset_input_buffer()
-        # self.get_logger().info(f"Sending command to Arduino: {cmd_str.strip()}")
-
-        # ----- Retry mechanism first idea -----
-        # with self.lock:
-        #     while True:
-        #         self.ser.write(cmd_str.encode('utf-8'))
-        #         self.ser.reset_input_buffer()
-        #         raw_line = self.ser.readline()
-        #         line = raw_line.decode('utf-8', errors='ignore').rstrip()
-        #         if line == cmd_str.strip():
-        #             self.get_logger().info(f"Command sent successfully: {line}")
-        #             break
-        #         else:
-        #             self.get_logger().error(f"Failed to send command: {line}")
-        #             continue
-
-        # ----- Retry mechanism second idea -----
+        # ----- Retry mechanism -----
         max_retries = 5
         retry_delay = 0.1  # segundos
 
@@ -72,7 +54,7 @@ class MotorDriverNode(Node):
         for attempt in range(max_retries):
             self.ser.write(cmd_str.encode('utf-8'))
             self.ser.reset_input_buffer()
-            self.get_logger().info(f"Attempt {attempt+1}: Sending command to Arduino: {cmd_str.strip()}")
+            #self.get_logger().info(f"Attempt {attempt+1}: Sending command to Arduino: {cmd_str.strip()}")
 
             start_time = time.time()
             timeout = 1.0  # segundos
@@ -83,17 +65,17 @@ class MotorDriverNode(Node):
                     raw_line = self.ser.readline()
                     line = raw_line.decode('utf-8', errors='ignore').strip()
                     if line == cmd_str.strip():
-                        self.get_logger().info(f"Command acknowledged by Arduino: {line}")
+                        #self.get_logger().info(f"Command acknowledged by Arduino: {line}")
                         return  # Éxito, salimos de la función
                     else:
                         self.get_logger().warning(f"Unexpected response: {line}")
 
             # Si no hubo respuesta o fue incorrecta, reintentamos
-            self.get_logger().warning(f"No ack from Arduino, retrying in {retry_delay} sec...")
+            #self.get_logger().warning(f"No ack from Arduino, retrying in {retry_delay} sec...")
             time.sleep(retry_delay)
 
         # Si llegamos aquí, todos los intentos fallaron
-        self.get_logger().error(f"Failed to send command to Arduino after {max_retries} attempts.")
+        #self.get_logger().error(f"Failed to send command to Arduino after {max_retries} attempts.")
             
         time.sleep(0.1)
 
