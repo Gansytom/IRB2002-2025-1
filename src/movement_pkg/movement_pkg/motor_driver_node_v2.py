@@ -46,34 +46,52 @@ class MotorDriverNode(Node):
         else:
             cmd_str = f"{command},{vel_left},{vel_right}\n"
         
-        # ----- Retry mechanism -----
-        max_retries = 5
-        retry_delay = 0.1  # segundos
+        self.ser.write(cmd_str.encode('utf-8'))
+        self.ser.reset_input_buffer()
+        # self.get_logger().info(f"Sending command to Arduino: {cmd_str.strip()}")
 
+        # ----- Retry mechanism first idea -----
         # with self.lock:
-        for attempt in range(max_retries):
-            self.ser.write(cmd_str.encode('utf-8'))
-            self.ser.reset_input_buffer()
-            #self.get_logger().info(f"Attempt {attempt+1}: Sending command to Arduino: {cmd_str.strip()}")
+        #     while True:
+        #         self.ser.write(cmd_str.encode('utf-8'))
+        #         self.ser.reset_input_buffer()
+        #         raw_line = self.ser.readline()
+        #         line = raw_line.decode('utf-8', errors='ignore').rstrip()
+        #         if line == cmd_str.strip():
+        #             self.get_logger().info(f"Command sent successfully: {line}")
+        #             break
+        #         else:
+        #             self.get_logger().error(f"Failed to send command: {line}")
+        #             continue
 
-            start_time = time.time()
-            timeout = 1.0  # segundos
+        # # ----- Retry mechanism second idea -----
+        # max_retries = 5
+        # retry_delay = 0.1  # segundos
 
-            # Espera respuesta del Arduino
-            while time.time() - start_time < timeout:
-                if self.ser.in_waiting > 0:
-                    raw_line = self.ser.readline()
-                    line = raw_line.decode('utf-8', errors='ignore').strip()
-                    if line == cmd_str.strip():
-                        #self.get_logger().info(f"Command acknowledged by Arduino: {line}")
-                        return  # Éxito, salimos de la función
-                    else:
-                        pass
-                        #self.get_logger().warning(f"Unexpected response: {line}")
+        # # with self.lock:
+        # for attempt in range(max_retries):
+        #     self.ser.write(cmd_str.encode('utf-8'))
+        #     self.ser.reset_input_buffer()
+        #     #self.get_logger().info(f"Attempt {attempt+1}: Sending command to Arduino: {cmd_str.strip()}")
 
-            # Si no hubo respuesta o fue incorrecta, reintentamos
-            #self.get_logger().warning(f"No ack from Arduino, retrying in {retry_delay} sec...")
-            time.sleep(retry_delay)
+        #     start_time = time.time()
+        #     timeout = 1.0  # segundos
+
+        #     # Espera respuesta del Arduino
+        #     while time.time() - start_time < timeout:
+        #         if self.ser.in_waiting > 0:
+        #             raw_line = self.ser.readline()
+        #             line = raw_line.decode('utf-8', errors='ignore').strip()
+        #             if line == cmd_str.strip():
+        #                 #self.get_logger().info(f"Command acknowledged by Arduino: {line}")
+        #                 return  # Éxito, salimos de la función
+        #             else:
+        #                 pass
+        #                 #self.get_logger().warning(f"Unexpected response: {line}")
+
+        #     # Si no hubo respuesta o fue incorrecta, reintentamos
+        #     #self.get_logger().warning(f"No ack from Arduino, retrying in {retry_delay} sec...")
+        #     time.sleep(retry_delay)
 
         # Si llegamos aquí, todos los intentos fallaron
         #self.get_logger().error(f"Failed to send command to Arduino after {max_retries} attempts.")
@@ -85,8 +103,7 @@ class MotorDriverNode(Node):
             with self.lock:
                 raw_line = self.ser.readline()
                 line = raw_line.decode('utf-8', errors='ignore').rstrip()
-                if "Velocidad" in line:
-                    self.get_logger().info(f"RPM feedback: {line}")
+                self.get_logger().info(f"RPM feedback: {line}")
                 return line
         return None
 
