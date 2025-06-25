@@ -96,7 +96,7 @@ class MotorDriverNode(Node):
         # Si llegamos aquí, todos los intentos fallaron
         #self.get_logger().error(f"Failed to send command to Arduino after {max_retries} attempts.")
             
-        time.sleep(0.1)
+        time.sleep(0.5)
 
     def get_rpm_feedback(self): # Read the RPM feedback from the Arduino
         if self.ser.in_waiting > 0:
