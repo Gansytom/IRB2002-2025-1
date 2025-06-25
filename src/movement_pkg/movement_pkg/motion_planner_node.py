@@ -53,9 +53,11 @@ class MotionPlannerNode(Node):
     def callback_call_set_vel(self, future): # Callback for the service call
         response: SetCmdVel.Response = future.result()
         if response.success:
-            self.get_logger().info("command sent successfully")
+            pass
+            #self.get_logger().info("command sent successfully")
         else:
-            self.get_logger().info("command failed to send")
+            pass
+            #self.get_logger().info("command failed to send")
 
 def main(args=None):
     rclpy.init(args=args)
