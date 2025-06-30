@@ -42,7 +42,7 @@ class CameraControllerNode(Node):
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
-        self.base_speed = 40
+        self.base_speed = 60
 
         self.tracked_target = None
         self.tracking_counter = 0
