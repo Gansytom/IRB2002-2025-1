@@ -42,7 +42,7 @@ class CameraControllerNode(Node):
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
-        self.base_speed = 50
+        self.base_speed = 40
 
         self.tracked_target = None
         self.tracking_counter = 0
@@ -50,6 +50,7 @@ class CameraControllerNode(Node):
         self.tracking_lost_counter = 0
         self.tracking_confirm_threshold = 5
         self.last_detection = None
+        self.y_distance_factor = 1.25
 
     def prediction_callback(self, msg): # Callback for the prediction subscriber
         if not msg.bottles:
@@ -109,7 +110,7 @@ class CameraControllerNode(Node):
 
         # Set the state based on the target position
         is_aligned = abs(target.x - img_center_x) < self.align_threshold
-        is_close = target.y > img_center_y
+        is_close = target.y > img_center_y * self.y_distance_factor
         if not is_close:
             self.state = "align_forward"
         elif is_close and not is_aligned:
