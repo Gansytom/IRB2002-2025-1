@@ -58,6 +58,11 @@ class CameraControllerNode(Node):
             if self.tracking_lost_counter > self.tracking_max_lost:
                 self.tracked_target = None
                 self.tracking_counter = 0
+                cmd = CmdVel()
+                cmd.command = "move"
+                cmd.left_velocity = 0.0
+                cmd.right_velocity = 0.0
+                self.cmd_publisher.publish(cmd)
             return
 
         # Choose the bottle with min distance to the bottom of the image and min distance to the center
