@@ -50,7 +50,12 @@ class CameraControllerNode(Node):
         self.tracking_lost_counter = 0
         self.tracking_confirm_threshold = 5
         self.last_detection = None
-        self.y_distance_factor = 1.25
+        self.distance_factor = 1.25
+
+        # ----- Shovel activation control -----
+        self.shovel_sent = False
+        self.shovel_start_time = None
+        self.shovel_wait_time = 2.0  # seconds
 
     def prediction_callback(self, msg): # Callback for the prediction subscriber
         if not msg.bottles:
@@ -58,6 +63,8 @@ class CameraControllerNode(Node):
             if self.tracking_lost_counter > self.tracking_max_lost:
                 self.tracked_target = None
                 self.tracking_counter = 0
+                self.shovel_sent = False
+                self.shovel_start_time = None
                 cmd = CmdVel()
                 cmd.command = "move"
                 cmd.left_velocity = 0.0
@@ -115,7 +122,9 @@ class CameraControllerNode(Node):
 
         # Set the state based on the target position
         is_aligned = abs(target.x - img_center_x) < self.align_threshold
-        is_close = target.y > img_center_y * self.y_distance_factor
+        is_close = target.y > img_center_y * self.distance_factor
+
+        previous_state = self.state
         if not is_close:
             self.state = "align_forward"
         elif is_close and not is_aligned:
@@ -123,24 +132,42 @@ class CameraControllerNode(Node):
         elif is_close and is_aligned:
             self.state = "use_shovel"
 
+        if self.state != "use_shovel":
+            self.shovel_sent = False
+            self.shovel_start_time = None
+
         # Set the command based on the state
         cmd = CmdVel()
         if self.state == "align_forward":
-            command = "move"
-            left_vel = self.base_speed + correction
-            right_vel = self.base_speed - correction
+            cmd.command = "move"
+            cmd.left_velocity = self.base_speed + correction
+            cmd.right_velocity = self.base_speed - correction
         elif self.state == "align_backward":
-            command = "move"
-            left_vel = -(self.base_speed - correction)
-            right_vel = -(self.base_speed + correction)
+            cmd.command = "move"
+            cmd.left_velocity = -(self.base_speed - correction)
+            cmd.right_velocity = -(self.base_speed + correction)
         elif self.state == "use_shovel":
-            command = "shovel"
-            left_vel = 50.0
-            right_vel = 50.0
+            if not self.shovel_sent:
+                if self.shovel_start_time is None:
+                    self.shovel_start_time = now
+                    cmd.command = "move"
+                    cmd.left_velocity = 0.0
+                    cmd.right_velocity = 0.0
+                elif now - self.shovel_start_time > self.shovel_wait_time:
+                    self.get_logger().info("Shovel command issued.")
+                    cmd.command = "shovel"
+                    cmd.left_velocity = 50.0
+                    cmd.right_velocity = 50.0
+                    self.shovel_sent = True
+                else:
+                    cmd.command = "move"
+                    cmd.left_velocity = 0.0
+                    cmd.right_velocity = 0.0
+            else:
+                cmd.command = "move"
+                cmd.left_velocity = 0.0
+                cmd.right_velocity = 0.0
 
-        cmd.command = command
-        cmd.left_velocity = float(left_vel)
-        cmd.right_velocity = float(right_vel)
         self.cmd_publisher.publish(cmd)
 
 
