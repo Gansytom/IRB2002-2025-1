@@ -29,7 +29,7 @@ float velocidad_ref_L = 0, velocidad_ref_R = 0;
 float velocidad_ref_L_deseada = 0, velocidad_ref_R_deseada = 0;
 float velocidad_pala_ref_L = 0, velocidad_pala_ref_R = 0;
 float output1 = 0, output2 = 0;
-int velocidad_limite = 100;  
+int velocidad_limite = 150;  
 
 // Interpolación
 const float incrementoMaximo = 5.0; // RPM por ciclo
@@ -110,10 +110,14 @@ void loop() {
   int nueva_direccion_R = (velocidad_ref_R >= 0) ? 1 : -1;
 
   if (nueva_direccion_L != direccion_previa_L) {
+    integral2 = 0;
+    error_previo2 = 0;
     analogWrite(LR_PWM, 0); analogWrite(LL_PWM, 0);
     delay(20);
   }
   if (nueva_direccion_R != direccion_previa_R) {
+    integral1 = 0;
+    error_previo1 = 0;
     analogWrite(RR_PWM, 0); analogWrite(RL_PWM, 0);
     delay(20);
   }
@@ -149,6 +153,8 @@ void verificarComando() {
     } else if (comando == "stop") {
       digitalWrite(RELAY_PIN, LOW);
       Serial.println("Emergency Stop");
+      integral1 = 0; integral2 = 0;
+      error_previo1 = 0; error_previo2 = 0;
     } else if (comando.indexOf(",") > 0) {
       int firstComa = comando.indexOf(",");
       int lastComa = comando.lastIndexOf(",");
@@ -182,8 +188,8 @@ void verificarComando() {
       }
     }
 
-    // Reset PID
-    integral1 = 0; integral2 = 0;
-    error_previo1 = 0; error_previo2 = 0;
+    // Reset PID (comentar para que no se reinicie)
+//    integral1 = 0; integral2 = 0;
+//    error_previo1 = 0; error_previo2 = 0;
   }
 }
