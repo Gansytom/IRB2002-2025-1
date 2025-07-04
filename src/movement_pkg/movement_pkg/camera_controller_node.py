@@ -159,14 +159,14 @@ class CameraControllerNode(Node):
                     cmd.left_velocity = 100.0
                     cmd.right_velocity = 100.0
                     self.shovel_sent = True
-                else:
-                    cmd.command = "move"
-                    cmd.left_velocity = 0.0
-                    cmd.right_velocity = 0.0
-            else:
-                cmd.command = "move"
-                cmd.left_velocity = 0.0
-                cmd.right_velocity = 0.0
+            #     else:
+            #         cmd.command = "move"
+            #         cmd.left_velocity = 0.0
+            #         cmd.right_velocity = 0.0
+            # else:
+            #     cmd.command = "move"
+            #     cmd.left_velocity = 0.0
+            #     cmd.right_velocity = 0.0
 
         self.cmd_publisher.publish(cmd)
 
