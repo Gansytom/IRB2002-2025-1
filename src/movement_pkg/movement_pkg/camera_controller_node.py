@@ -37,7 +37,7 @@ class CameraControllerNode(Node):
         self.state = None
         self.y_distance_factor = 0.7
         self.x_distance_factor = 1 - self.y_distance_factor
-        self.align_threshold = 50
+        self.align_threshold = 100
 
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
@@ -50,7 +50,7 @@ class CameraControllerNode(Node):
         self.tracking_lost_counter = 0
         self.tracking_confirm_threshold = 5
         self.last_detection = None
-        self.distance_factor = 1.25
+        self.distance_factor = 1.4
 
         # ----- Shovel activation control -----
         self.shovel_sent = False
