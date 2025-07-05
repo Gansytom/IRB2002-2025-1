@@ -47,15 +47,15 @@ class MotorDriverNode(Node):
         else:
             cmd_str = f"{command},{vel_left},{vel_right}\n"
 
-        if command == "shovel":
-            if self.running_shovel:
-                self.get_logger().warning("Shovel is already running, ignoring command.")
-                return
-            self.running_shovel = True
+        # if command == "shovel":
+        #     if self.running_shovel:
+        #         self.get_logger().warning("Shovel is already running, ignoring command.")
+        #         return
+        #     self.running_shovel = True
 
-        if self.running_shovel and command != "shovel":
-            self.get_logger().warning("Shovel is already running, ignoring command.")
-            return
+        # if self.running_shovel and command != "shovel":
+        #     self.get_logger().warning("Shovel is already running, ignoring command.")
+        #     return
         
         # self.ser.write(cmd_str.encode('utf-8'))
         # self.ser.reset_input_buffer()
@@ -101,8 +101,8 @@ class MotorDriverNode(Node):
                 self.ser.flushInput()
                 raw_line = self.ser.readline()
                 line = raw_line.decode('utf-8', errors='ignore').rstrip()
-                if line == "Finish":
-                    self.running_shovel = False
+                # if line == "Finish":
+                #     self.running_shovel = False
                 self.get_logger().info(f"RPM feedback: {line}")
                 return line
         return None
