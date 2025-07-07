@@ -42,7 +42,7 @@ class CameraControllerNode(Node):
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
         self.base_speed = 45
-        self.shovel_base_speed = 150
+        self.shovel_base_speed = 150.0
 
         self.tracked_target = None
         self.tracking_counter = 0
