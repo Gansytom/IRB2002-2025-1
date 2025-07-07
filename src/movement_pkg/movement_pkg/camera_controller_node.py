@@ -37,12 +37,12 @@ class CameraControllerNode(Node):
         self.state = None
         self.y_distance_factor = 0.7
         self.x_distance_factor = 1 - self.y_distance_factor
-        self.align_threshold = 150
 
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
         self.base_speed = 40
+        self.shovel_base_speed = 150
 
         self.tracked_target = None
         self.tracking_counter = 0
@@ -54,6 +54,8 @@ class CameraControllerNode(Node):
         # ----- Axis criteria -----
         self.above_distance_factor = 0.6
         self.below_distance_factor = 1.4
+        self.shovel_distance_factor = 1.7
+        self.align_threshold = 150
 
         # ----- Shovel activation control -----
         self.shovel_sent = False
@@ -125,7 +127,9 @@ class CameraControllerNode(Node):
 
         # Set the state based on the target position
         is_aligned = abs(target.x - img_center_x) < self.align_threshold
+        is_far = target.y < img_center_y * self.above_distance_factor
         is_close = target.y > img_center_y * self.below_distance_factor
+        is_shovel_ready = target.y > img_center_y * self.shovel_distance_factor
 
         if not is_close:
             self.state = "align_forward"
@@ -156,8 +160,8 @@ class CameraControllerNode(Node):
                 elif now - self.shovel_start_time > self.shovel_wait_time:
                     self.get_logger().info("Shovel command issued.")
                     cmd.command = "shovel"
-                    cmd.left_velocity = 100.0
-                    cmd.right_velocity = 100.0
+                    cmd.left_velocity = self.shovel_base_speed
+                    cmd.right_velocity = self.shovel_base_speed
                     self.shovel_sent = True
 
         self.cmd_publisher.publish(cmd)
