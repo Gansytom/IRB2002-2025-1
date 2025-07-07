@@ -27,8 +27,7 @@ class MotionPlannerNode(Node):
         self.last_cmd_vel.right_velocity = 0.0
 
     def cmd_vel_callback(self, msg): # Receive the command and velocities from the subscriber
-        if msg.command == "move":
-            if self.last_cmd_vel.command != msg.command or \
+        if self.last_cmd_vel.command != msg.command or \
             self.last_cmd_vel.left_velocity != msg.left_velocity or \
             self.last_cmd_vel.right_velocity != msg.right_velocity:
                 cmd_vel = CmdVel()
