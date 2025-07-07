@@ -27,15 +27,16 @@ class MotionPlannerNode(Node):
         self.last_cmd_vel.right_velocity = 0.0
 
     def cmd_vel_callback(self, msg): # Receive the command and velocities from the subscriber
-        if self.last_cmd_vel.command != msg.command or \
-           self.last_cmd_vel.left_velocity != msg.left_velocity or \
-           self.last_cmd_vel.right_velocity != msg.right_velocity:
-            cmd_vel = CmdVel()
-            cmd_vel.command = msg.command
-            cmd_vel.left_velocity = msg.left_velocity
-            cmd_vel.right_velocity = msg.right_velocity
-            self.call_set_vel(cmd_vel)
-            self.last_cmd_vel = cmd_vel
+        if msg.command == "move":
+            if self.last_cmd_vel.command != msg.command or \
+            self.last_cmd_vel.left_velocity != msg.left_velocity or \
+            self.last_cmd_vel.right_velocity != msg.right_velocity:
+                cmd_vel = CmdVel()
+                cmd_vel.command = msg.command
+                cmd_vel.left_velocity = msg.left_velocity
+                cmd_vel.right_velocity = msg.right_velocity
+                self.call_set_vel(cmd_vel)
+                self.last_cmd_vel = cmd_vel
 
     def call_set_vel(self, cmd_vel): # Call the service to set the velocities
         if not self.set_vel_client_.wait_for_service(timeout_sec=1.0):
