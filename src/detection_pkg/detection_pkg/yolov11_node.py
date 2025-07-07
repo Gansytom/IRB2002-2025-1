@@ -46,6 +46,7 @@ class PredictionNode(Node):
 
         self.above_distance_factor = 0.6
         self.below_distance_factor = 1.4
+        self.shovel_distance_factor = 1.7
         self.align_threshold = 150
 
     def img_callback(self, msg):
@@ -115,6 +116,7 @@ class PredictionNode(Node):
         # Draw criteria axis
         cv2.line(frame, (0, int(img_height/2 * self.below_distance_factor)), (img_width, int(img_height/2 * self.below_distance_factor)), (0, 0, 255), 2)
         cv2.line(frame, (0, int(img_height/2 * self.above_distance_factor)), (img_width, int(img_height/2 * self.above_distance_factor)), (0, 0, 255), 2)
+        cv2.line(frame, (0, int(img_height/2 * self.shovel_distance_factor)), (img_width, int(img_height/2 * self.shovel_distance_factor)), (0, 0, 255), 2)
         cv2.line(frame, (int(img_width/2 - self.align_threshold), 0), (int(img_width/2 - self.align_threshold), img_height), (0, 0, 255), 2)
         cv2.line(frame, (int(img_width/2 + self.align_threshold), 0), (int(img_width/2 + self.align_threshold), img_height), (0, 0, 255), 2)
 
