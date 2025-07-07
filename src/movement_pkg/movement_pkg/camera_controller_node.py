@@ -150,23 +150,13 @@ class CameraControllerNode(Node):
             if not self.shovel_sent:
                 if self.shovel_start_time is None:
                     self.shovel_start_time = now
-                    # cmd.command = "move"
-                    # cmd.left_velocity = 0.0
-                    # cmd.right_velocity = 0.0
+                    
                 elif now - self.shovel_start_time > self.shovel_wait_time:
                     self.get_logger().info("Shovel command issued.")
                     cmd.command = "shovel"
                     cmd.left_velocity = 100.0
                     cmd.right_velocity = 100.0
                     self.shovel_sent = True
-                # else:
-                #     cmd.command = "move"
-                #     cmd.left_velocity = 0.0
-                #     cmd.right_velocity = 0.0
-            # else:
-            #     cmd.command = "move"
-            #     cmd.left_velocity = 0.0
-            #     cmd.right_velocity = 0.0
 
         self.cmd_publisher.publish(cmd)
 
