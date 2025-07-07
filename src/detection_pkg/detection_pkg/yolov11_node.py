@@ -46,7 +46,7 @@ class PredictionNode(Node):
 
         self.above_distance_factor = 0.6
         self.below_distance_factor = 1.4
-        self.align_threshold = 100
+        self.align_threshold = 150
 
     def img_callback(self, msg):
         t_start = time.perf_counter()
@@ -89,8 +89,8 @@ class PredictionNode(Node):
             bottle.id = id
             id += 1
             bottle.probability = conf
-            bottle.x = xmin + x
-            bottle.y = ymin + y
+            bottle.x = float(xmin + x)
+            bottle.y = float(ymin + height)
             bottle.width = width
             bottle.height = height
             bottle.img_width = img_width
@@ -106,17 +106,17 @@ class PredictionNode(Node):
                 labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1) # Get font size
                 label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
                 cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), color, cv2.FILLED) # Draw white box to put label text in
-                cv2.circle(frame, (int(xmin + x), int(ymin + y)), 5, (0, 255, 0), -1)
+                cv2.circle(frame, (int(xmin + x), int(ymin + height)), 5, (0, 255, 0), -1)
                 cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) # Draw label text
 
                 # Basic example: count the number of objects in the image
                 object_count = object_count + 1
 
         # Draw criteria axis
-        cv2.line(frame, (0, int(img_height/2 * self.below_distance_factor)), (img_width, int(img_height/2 * self.below_distance_factor)), (255, 0, 0), 1)
-        cv2.line(frame, (0, int(img_height/2 * self.above_distance_factor)), (img_width, int(img_height/2 * self.above_distance_factor)), (255, 0, 0), 1)
-        cv2.line(frame, (int(img_width/2 - self.align_threshold), 0), (int(img_width/2 - self.align_threshold), img_height), (255, 0, 0), 1)
-        cv2.line(frame, (int(img_width/2 + self.align_threshold), 0), (int(img_width/2 + self.align_threshold), img_height), (255, 0, 0), 1)
+        cv2.line(frame, (0, int(img_height/2 * self.below_distance_factor)), (img_width, int(img_height/2 * self.below_distance_factor)), (0, 0, 255), 2)
+        cv2.line(frame, (0, int(img_height/2 * self.above_distance_factor)), (img_width, int(img_height/2 * self.above_distance_factor)), (0, 0, 255), 2)
+        cv2.line(frame, (int(img_width/2 - self.align_threshold), 0), (int(img_width/2 - self.align_threshold), img_height), (0, 0, 255), 2)
+        cv2.line(frame, (int(img_width/2 + self.align_threshold), 0), (int(img_width/2 + self.align_threshold), img_height), (0, 0, 255), 2)
 
         # Calculate and draw framerate (if using video, USB, or Picamera source)
         cv2.putText(frame, f'FPS: {self.avg_frame_rate:0.2f}', (10,20), cv2.FONT_HERSHEY_SIMPLEX, .7, (0,255,255), 2) # Draw framerate

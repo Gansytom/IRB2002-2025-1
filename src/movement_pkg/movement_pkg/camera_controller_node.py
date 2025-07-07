@@ -37,7 +37,7 @@ class CameraControllerNode(Node):
         self.state = None
         self.y_distance_factor = 0.7
         self.x_distance_factor = 1 - self.y_distance_factor
-        self.align_threshold = 100
+        self.align_threshold = 150
 
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
