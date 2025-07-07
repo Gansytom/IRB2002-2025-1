@@ -60,7 +60,7 @@ class CameraControllerNode(Node):
         # ----- Shovel activation control -----
         self.shovel_sent = False
         self.shovel_start_time = None
-        self.shovel_wait_time = 2.0  # seconds
+        self.shovel_wait_time = 1.5  # seconds
 
     def prediction_callback(self, msg): # Callback for the prediction subscriber
         if not msg.bottles:
