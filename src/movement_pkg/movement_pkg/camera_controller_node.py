@@ -50,7 +50,10 @@ class CameraControllerNode(Node):
         self.tracking_lost_counter = 0
         self.tracking_confirm_threshold = 5
         self.last_detection = None
-        self.distance_factor = 1.4
+
+        # ----- Axis criteria -----
+        self.above_distance_factor = 0.6
+        self.below_distance_factor = 1.4
 
         # ----- Shovel activation control -----
         self.shovel_sent = False
@@ -122,9 +125,8 @@ class CameraControllerNode(Node):
 
         # Set the state based on the target position
         is_aligned = abs(target.x - img_center_x) < self.align_threshold
-        is_close = target.y > img_center_y * self.distance_factor
+        is_close = target.y > img_center_y * self.below_distance_factor
 
-        previous_state = self.state
         if not is_close:
             self.state = "align_forward"
         elif is_close and not is_aligned:
