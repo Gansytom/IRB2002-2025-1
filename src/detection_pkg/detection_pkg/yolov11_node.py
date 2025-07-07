@@ -16,10 +16,8 @@ class PredictionNode(Node):
         super().__init__("prediction_node")
         self.bridge = CvBridge()
 
-        # Create publicher for Object detected
+        # ----- Timers, publishers, suscribers and services -----
         self.publisher_ = self.create_publisher(BottleArray, "/bottle_detections", qos_profile=qos_profile_sensor_data)
-
-        # Create a suscriber for images
         self.img_suscriber_ = self.create_subscription(
             CompressedImage,
             "/camera/image/compressed",            
@@ -27,11 +25,12 @@ class PredictionNode(Node):
             qos_profile=qos_profile_sensor_data
         )
         self.get_logger().info("Prediction node started")
+        # ----- Parameters -----
         self.frame = None
         self.annotated_frame = None
         self.results = None
 
-        model_path = "/home/tomy/IRB2002-2025-1/src/detection_pkg/detection_pkg/best_yolo11.pt"
+        model_path = "/home/tomy/IRB2002-2025-1/src/detection_pkg/detection_pkg/modelo.pt"
         #model_path = "IRB2002-2025-1/src/detection_pkg/detection_pkg/best_yolo11_ncnn_model"
         self.model = YOLO(model_path)
         self.labels = ["Botellas"]
@@ -40,7 +39,6 @@ class PredictionNode(Node):
         self.bbox_colors = [(164,120,87), (68,148,228), (93,97,209), (178,182,133), (88,159,106), 
               (96,202,231), (159,124,168), (169,162,241), (98,118,150), (172,176,184)]
 
-        # Initialize control and status variables
         self.avg_frame_rate = 0
         self.frame_rate_buffer = []
         self.fps_avg_len = 200
@@ -51,8 +49,8 @@ class PredictionNode(Node):
         # Convert the ROS Image message to OpenCV format
         np_arr = np.frombuffer(msg.data, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-        width = frame.shape[0]
-        height = frame.shape[1]
+        img_width = frame.shape[1]
+        img_height = frame.shape[0]
         # frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
         # Run inference on frame
@@ -66,12 +64,13 @@ class PredictionNode(Node):
         id = 0
         for i in range(len(detections)):
             bottle = Bottle()
-            # Get bounding box coordinates
-            # Ultralytics returns results in Tensor format, which have to be converted to a regular Python array
+            
             xyxy_tensor = detections[i].xyxy.cpu() # Detections in Tensor format in CPU memory
             xyxy = xyxy_tensor.numpy().squeeze() # Convert tensors to Numpy array
             xmin, ymin, xmax, ymax = xyxy.astype(int) # Extract individual coordinates and convert to int
 
+            width = int(abs(xmax - xmin))
+            height = int(abs(ymax - ymin))
             x = abs(xmin - xmax)/2
             y = abs(ymin - ymax)/2
 
@@ -86,13 +85,15 @@ class PredictionNode(Node):
             bottle.id = id
             id += 1
             bottle.probability = conf
-            bottle.x = x
-            bottle.y = y
+            bottle.x = xmin + x
+            bottle.y = ymin + y
             bottle.width = width
             bottle.height = height
+            bottle.img_width = img_width
+            bottle.img_height = img_height
             pub_msg.bottles.append(bottle)
             # Draw box if confidence threshold is high enough
-            if conf > 0.7:
+            if conf > 0.45:
 
                 color = self.bbox_colors[classidx % 10]
                 cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), color, 2)
@@ -101,6 +102,7 @@ class PredictionNode(Node):
                 labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1) # Get font size
                 label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
                 cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), color, cv2.FILLED) # Draw white box to put label text in
+                cv2.circle(frame, (int(xmin + x), int(ymin + y)), 5, (0, 255, 0), -1)
                 cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) # Draw label text
 
                 # Basic example: count the number of objects in the image

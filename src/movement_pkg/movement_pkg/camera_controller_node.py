@@ -32,51 +32,86 @@ class CameraControllerNode(Node):
             self.prediction_callback,
             qos_profile_sensor_data
         )
-        self.publisher = self.create_publisher(CmdVel, "motion/cmd_vel", 10)
+        self.cmd_publisher = self.create_publisher(CmdVel, "motion/cmd_vel", 10)
         # ----- Parameters -----
-        #self.cap = cv2.VideoCapture(1, cv2.CAP_V4L)
+        self.state = None
+        self.y_distance_factor = 0.7
+        self.x_distance_factor = 1 - self.y_distance_factor
+        self.align_threshold = 100
+
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
-        #cv2.namedWindow("Camera")
-        #cv2.setMouseCallback("Camera", self.mouse_callback)
-
-        #self.timer = self.create_timer(0.1, self.timer_callback)
-        #self.get_logger().info("Camera node started")
         self.base_speed = 40
-        self.align_threshold = 15  # Threshold for alignment correction
 
-    # def timer_callback(self):
-    #     # ret, img = self.cap.read()
-    #     # if not ret or img is None:
-    #     #     self.get_logger().error("Failed to read image from camera")
-    #     #     return
+        self.tracked_target = None
+        self.tracking_counter = 0
+        self.tracking_max_lost = 20
+        self.tracking_lost_counter = 0
+        self.tracking_confirm_threshold = 5
+        self.last_detection = None
+        self.distance_factor = 1.4
 
-    #     # Lee la imagen desde archivo
-    #     img = cv2.imread("/home/tomy/IRB2002-2025-1/src/movement_pkg/movement_pkg/arena_v1_00799.jpg")
-    #     if img is None:
-    #         self.get_logger().error("No se pudo leer la imagen arena_v1_00799.jpg")
-    #         return
-    #     cv_image = cv2.resize(img, (640, 480))
-    #     self.process_results(self.target, cv_image)
+        # ----- Shovel activation control -----
+        self.shovel_sent = False
+        self.shovel_start_time = None
+        self.shovel_wait_time = 2.0  # seconds
 
-    def mouse_callback(self, event, x, y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.target = (x, y)
-            self.get_logger().info(f"Nuevo target seleccionado: {self.target}")
+    def prediction_callback(self, msg): # Callback for the prediction subscriber
+        if not msg.bottles:
+            self.tracking_lost_counter += 1
+            if self.tracking_lost_counter > self.tracking_max_lost:
+                self.tracked_target = None
+                self.tracking_counter = 0
+                self.shovel_sent = False
+                self.shovel_start_time = None
+                cmd = CmdVel()
+                cmd.command = "move"
+                cmd.left_velocity = 0.0
+                cmd.right_velocity = 0.0
+                self.cmd_publisher.publish(cmd)
+            return
 
-    def prediction_callback(self, msg):
-        for prediction in msg.bottles:
-            self.process_results(prediction)
+        # Choose the bottle with min distance to the bottom of the image and min distance to the center
+        candidate = min(msg.bottles, key=lambda 
+                        b: self.y_distance_factor*(b.img_height - b.y) 
+                        + self.x_distance_factor*abs(b.x - (b.img_width // 2))
+        )
 
-    def process_results(self, target):
-        # if self.target is None:
-        #     cv2.imshow("Camera", cv_image)
-        #     cv2.waitKey(1)
-        #     return
+        if self.tracked_target is None:
+            if self.last_detection is not None and self.is_near(candidate, self.last_detection, threshold=40):
+                self.tracking_counter += 1
+            else:
+                self.tracking_counter = 1
+            self.last_detection = candidate
 
-        img_center_x = target.width // 2
-        img_center_y = target.height // 2
+            if self.tracking_counter >= self.tracking_confirm_threshold:
+                self.tracked_target = candidate
+                self.tracking_lost_counter = 0
+                self.process_results(candidate)
+        else:
+            closest = min(msg.bottles, key=lambda b: self.distance(b, self.tracked_target))
+            if self.is_near(closest, self.tracked_target, threshold=60):
+                self.tracked_target = closest
+                self.tracking_lost_counter = 0
+                self.process_results(closest)
+            else:
+                self.tracking_lost_counter += 1
+                if self.tracking_lost_counter > self.tracking_max_lost:
+                    self.tracked_target = None
+                    self.tracking_counter = 0
+        
+    def distance(self, a, b):
+        return np.hypot(a.x - b.x, a.y - b.y)
+
+    def is_near(self, a, b, threshold=40):
+        return self.distance(a, b) < threshold
+
+    def process_results(self, target): # Process the results from the prediction
+        self.get_logger().info(f"Tracking target: {target.id} at ({target.x}, {target.y}) with area {target.width * target.height}")
+        
+        img_center_x = target.img_width // 2
+        img_center_y = target.img_height // 2
         error = target.x - img_center_x
 
         now = self.get_clock().now().nanoseconds / 1e9
@@ -85,28 +120,45 @@ class CameraControllerNode(Node):
 
         correction = self.pid.compute(error, dt)
 
+        # Set the state based on the target position
+        is_aligned = abs(target.x - img_center_x) < self.align_threshold
+        is_close = target.y > img_center_y * self.distance_factor
 
-        if target.y < img_center_y or \
-            target.x > img_center_x - self.align_threshold and \
-            target.x < img_center_x + self.align_threshold:
+        previous_state = self.state
+        if not is_close:
+            self.state = "align_forward"
+        elif is_close and not is_aligned:
+            self.state = "align_backward"
+        elif is_close and is_aligned:
+            self.state = "use_shovel"
 
-            left_vel = self.base_speed + correction
-            right_vel = self.base_speed - correction
-        else:
-            left_vel = -(self.base_speed - correction)
-            right_vel = -(self.base_speed + correction)
+        if self.state != "use_shovel":
+            self.shovel_sent = False
+            self.shovel_start_time = None
 
+        # Set the command based on the state
         cmd = CmdVel()
-        cmd.command = "move"
-        cmd.left_velocity = float(left_vel)
-        cmd.right_velocity = float(right_vel)
-        self.publisher.publish(cmd)
+        if self.state == "align_forward":
+            cmd.command = "move"
+            cmd.left_velocity = self.base_speed + correction
+            cmd.right_velocity = self.base_speed - correction
+        elif self.state == "align_backward":
+            cmd.command = "move"
+            cmd.left_velocity = -(self.base_speed - correction)
+            cmd.right_velocity = -(self.base_speed + correction)
+        elif self.state == "use_shovel":
+            if not self.shovel_sent:
+                if self.shovel_start_time is None:
+                    self.shovel_start_time = now
+                    
+                elif now - self.shovel_start_time > self.shovel_wait_time:
+                    self.get_logger().info("Shovel command issued.")
+                    cmd.command = "shovel"
+                    cmd.left_velocity = 100.0
+                    cmd.right_velocity = 100.0
+                    self.shovel_sent = True
 
-        # cv2.circle(cv_image, self.target, 5, (0, 0, 255), -1)
-        # cv2.line(cv_image, (self.img_center_x, 0), (self.img_center_x, cv_image.shape[0]), (255, 0, 0), 2)
-        # cv2.line(cv_image, (0, self.img_center_y), (cv_image.shape[1], self.img_center_y), (0, 255, 0), 2)
-        # cv2.imshow("Camera", cv_image)
-        # cv2.waitKey(1)
+        self.cmd_publisher.publish(cmd)
 
 
 def main(args=None):

@@ -19,8 +19,8 @@ class TerminalCmdVelPublisher(Node):
         self.input_thread.daemon = True
         self.input_thread.start()
 
-    def limit_velocity(self, velocity): # Limit the velocity to a range of -100 to 100
-        return max(min(velocity, 100.0), -100.0)
+    def limit_velocity(self, velocity): # Limit the velocity to a range of -150 to 150
+        return max(min(velocity, 150.0), -150.0)
 
     def read_input_loop(self): # Read input from the console in a loop
         while rclpy.ok():

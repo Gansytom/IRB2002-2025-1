@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <exec_depend>detection_pkg</exec_depend>
+  <exec_depend>camera_cpp_pkg</exec_depend>
   <exec_depend>movement_pkg</exec_depend>
   <exec_depend>joy</exec_depend>
   <exec_depend>robot_localization</exec_depend>

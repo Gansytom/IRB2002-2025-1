@@ -12,7 +12,7 @@ class MotorDriverNode(Node):
         super().__init__("motor_driver_node")
 
         # ----- Initialize the serial port -----
-        self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+        self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
         time.sleep(1)
         self.ser.reset_input_buffer()
         self.get_logger().info("Serial port opened successfully")
@@ -29,6 +29,7 @@ class MotorDriverNode(Node):
 
         # ----- Parameters -----
         self.lock = threading.Lock()
+        self.running_shovel = False
 
     def callback_set_vel(self, request: SetCmdVel.Request, response: SetCmdVel.Response): # Callback for the service to set the velocities
         with self.lock:
@@ -45,24 +46,20 @@ class MotorDriverNode(Node):
             cmd_str = command + "\n"
         else:
             cmd_str = f"{command},{vel_left},{vel_right}\n"
+
+        # if command == "shovel":
+        #     if self.running_shovel:
+        #         self.get_logger().warning("Shovel is already running, ignoring command.")
+        #         return
+        #     self.running_shovel = True
+
+        # if self.running_shovel and command != "shovel":
+        #     self.get_logger().warning("Shovel is already running, ignoring command.")
+        #     return
         
         # self.ser.write(cmd_str.encode('utf-8'))
         # self.ser.reset_input_buffer()
         # self.get_logger().info(f"Sending command to Arduino: {cmd_str.strip()}")
-
-        # ----- Retry mechanism first idea -----
-        # with self.lock:
-        #     while True:
-        #         self.ser.write(cmd_str.encode('utf-8'))
-        #         self.ser.reset_input_buffer()
-        #         raw_line = self.ser.readline()
-        #         line = raw_line.decode('utf-8', errors='ignore').rstrip()
-        #         if line == cmd_str.strip():
-        #             self.get_logger().info(f"Command sent successfully: {line}")
-        #             break
-        #         else:
-        #             self.get_logger().error(f"Failed to send command: {line}")
-        #             continue
 
         # ----- Retry mechanism second idea -----
         max_retries = 5
@@ -71,8 +68,8 @@ class MotorDriverNode(Node):
         # with self.lock:
         for attempt in range(max_retries):
             self.ser.write(cmd_str.encode('utf-8'))
-            self.ser.reset_input_buffer()
-            self.get_logger().info(f"Attempt {attempt+1}: Sending command to Arduino: {cmd_str.strip()}")
+            self.ser.flushInput()
+            #self.get_logger().info(f"Attempt {attempt+1}: Sending command to Arduino: {cmd_str.strip()}")
 
             start_time = time.time()
             timeout = 1.0  # segundos
@@ -83,25 +80,29 @@ class MotorDriverNode(Node):
                     raw_line = self.ser.readline()
                     line = raw_line.decode('utf-8', errors='ignore').strip()
                     if line == cmd_str.strip():
-                        self.get_logger().info(f"Command acknowledged by Arduino: {line}")
+                        #self.get_logger().info(f"Command acknowledged by Arduino: {line}")
                         return  # Éxito, salimos de la función
                     else:
-                        self.get_logger().warning(f"Unexpected response: {line}")
+                        pass
+                        #self.get_logger().warning(f"Unexpected response: {line}")
 
             # Si no hubo respuesta o fue incorrecta, reintentamos
-            self.get_logger().warning(f"No ack from Arduino, retrying in {retry_delay} sec...")
+            #self.get_logger().warning(f"No ack from Arduino, retrying in {retry_delay} sec...")
             time.sleep(retry_delay)
 
         # Si llegamos aquí, todos los intentos fallaron
-        self.get_logger().error(f"Failed to send command to Arduino after {max_retries} attempts.")
+        #self.get_logger().error(f"Failed to send command to Arduino after {max_retries} attempts.")
             
         time.sleep(0.1)
 
     def get_rpm_feedback(self): # Read the RPM feedback from the Arduino
         if self.ser.in_waiting > 0:
             with self.lock:
+                self.ser.flushInput()
                 raw_line = self.ser.readline()
                 line = raw_line.decode('utf-8', errors='ignore').rstrip()
+                # if line == "Finish":
+                #     self.running_shovel = False
                 self.get_logger().info(f"RPM feedback: {line}")
                 return line
         return None
