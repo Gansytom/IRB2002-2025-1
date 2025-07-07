@@ -44,6 +44,10 @@ class PredictionNode(Node):
         self.fps_avg_len = 200
         self.img_count = 0
 
+        self.above_distance_factor = 0.6
+        self.below_distance_factor = 1.4
+        self.align_threshold = 100
+
     def img_callback(self, msg):
         t_start = time.perf_counter()
         # Convert the ROS Image message to OpenCV format
@@ -107,6 +111,12 @@ class PredictionNode(Node):
 
                 # Basic example: count the number of objects in the image
                 object_count = object_count + 1
+
+        # Draw criteria axis
+        cv2.line(frame, (0, int(img_height/2 * self.below_distance_factor)), (img_width, int(img_height/2 * self.below_distance_factor)), (255, 0, 0), 1)
+        cv2.line(frame, (0, int(img_height/2 * self.above_distance_factor)), (img_width, int(img_height/2 * self.above_distance_factor)), (255, 0, 0), 1)
+        cv2.line(frame, (int(img_width/2 - self.align_threshold), 0), (int(img_width/2 - self.align_threshold), img_height), (255, 0, 0), 1)
+        cv2.line(frame, (int(img_width/2 + self.align_threshold), 0), (int(img_width/2 + self.align_threshold), img_height), (255, 0, 0), 1)
 
         # Calculate and draw framerate (if using video, USB, or Picamera source)
         cv2.putText(frame, f'FPS: {self.avg_frame_rate:0.2f}', (10,20), cv2.FONT_HERSHEY_SIMPLEX, .7, (0,255,255), 2) # Draw framerate
