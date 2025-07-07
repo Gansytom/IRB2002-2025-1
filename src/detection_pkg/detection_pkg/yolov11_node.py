@@ -47,7 +47,7 @@ class PredictionNode(Node):
         self.above_distance_factor = 0.6
         self.below_distance_factor = 1.4
         self.shovel_distance_factor = 1.7
-        self.align_threshold = 150
+        self.align_threshold = 200
 
     def img_callback(self, msg):
         t_start = time.perf_counter()

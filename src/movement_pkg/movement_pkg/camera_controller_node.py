@@ -41,7 +41,7 @@ class CameraControllerNode(Node):
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
-        self.base_speed = 40
+        self.base_speed = 45
         self.shovel_base_speed = 150
 
         self.tracked_target = None
@@ -55,7 +55,7 @@ class CameraControllerNode(Node):
         self.above_distance_factor = 0.6
         self.below_distance_factor = 1.4
         self.shovel_distance_factor = 1.7
-        self.align_threshold = 150
+        self.align_threshold = 200
 
         # ----- Shovel activation control -----
         self.shovel_sent = False
