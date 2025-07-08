@@ -132,6 +132,8 @@ class CameraControllerNode(Node):
         is_middle = not is_far and not is_close
         is_shovel_ready = target.y > img_center_y * self.shovel_distance_factor
 
+        self.get_logger().info(f"State: {self.state}, Shovel Ready: {is_shovel_ready}, Target y: {target.y}, Center y: {img_center_y}, Value: {img_center_y * self.shovel_distance_factor}")
+
         # ----- State machine logic (first version)-----
 
         # if not is_close:
@@ -150,7 +152,7 @@ class CameraControllerNode(Node):
             self.state = "align_forward"
         elif is_close or (is_middle and self.state == "align_backward"):
             self.state = "align_backward"
-        elif is_shovel_ready and is_close and is_aligned:
+        elif is_shovel_ready and is_aligned:
             self.state = "use_shovel"
         if self.state != "use_shovel":
             self.shovel_sent = False
