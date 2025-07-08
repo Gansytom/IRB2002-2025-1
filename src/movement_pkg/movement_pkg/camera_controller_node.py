@@ -113,7 +113,7 @@ class CameraControllerNode(Node):
         return self.distance(a, b) < threshold
 
     def process_results(self, target): # Process the results from the prediction
-        self.get_logger().info(f"Tracking target: {target.id} at ({target.x}, {target.y}) with area {target.width * target.height}")
+        #self.get_logger().info(f"Tracking target: {target.id} at ({target.x}, {target.y}) with area {target.width * target.height}")
         
         img_center_x = target.img_width // 2
         img_center_y = target.img_height // 2
