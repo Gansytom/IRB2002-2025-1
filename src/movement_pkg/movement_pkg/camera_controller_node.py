@@ -2,7 +2,6 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
-import cv2
 import numpy as np
 from my_robot_interfaces.msg import CmdVel, BottleArray
 
@@ -56,6 +55,7 @@ class CameraControllerNode(Node):
         self.below_distance_factor = 1.4
         self.shovel_distance_factor = 1.7
         self.align_threshold = 200
+        self.axis_criteria = None
 
         # ----- Shovel activation control -----
         self.shovel_sent = False
@@ -129,15 +129,29 @@ class CameraControllerNode(Node):
         is_aligned = abs(target.x - img_center_x) < self.align_threshold
         is_far = target.y < img_center_y * self.above_distance_factor
         is_close = target.y > img_center_y * self.below_distance_factor
+        is_middle = not is_far and not is_close
         is_shovel_ready = target.y > img_center_y * self.shovel_distance_factor
 
-        if not is_close:
-            self.state = "align_forward"
-        elif is_close and not is_aligned:
-            self.state = "align_backward"
-        elif is_close and is_aligned:
-            self.state = "use_shovel"
+        # ----- State machine logic (first version)-----
 
+        # if not is_close:
+        #     self.state = "align_forward"
+        # elif is_close and not is_aligned:
+        #     self.state = "align_backward"
+        # elif is_close and is_aligned:
+        #     self.state = "use_shovel"
+
+        # if self.state != "use_shovel":
+        #     self.shovel_sent = False
+        #     self.shovel_start_time = None
+
+        # ----- State machine logic (second version)-----
+        if is_far or (is_middle and self.state == "align_forward"):
+            self.state = "align_forward"
+        elif is_close or (is_middle and self.state == "align_backward"):
+            self.state = "align_backward"
+        elif is_shovel_ready and is_aligned:
+            self.state = "use_shovel"
         if self.state != "use_shovel":
             self.shovel_sent = False
             self.shovel_start_time = None
