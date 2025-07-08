@@ -113,7 +113,7 @@ class CameraControllerNode(Node):
         return self.distance(a, b) < threshold
 
     def process_results(self, target): # Process the results from the prediction
-        #self.get_logger().info(f"Tracking target: {target.id} at ({target.x}, {target.y}) with area {target.width * target.height}")
+        self.get_logger().info(f"Tracking target: {target.id} at ({target.x}, {target.y}) with area {target.width * target.height}")
         
         img_center_x = target.img_width // 2
         img_center_y = target.img_height // 2
@@ -131,8 +131,6 @@ class CameraControllerNode(Node):
         is_close = target.y > img_center_y * self.below_distance_factor
         is_middle = not is_far and not is_close
         is_shovel_ready = target.y > img_center_y * self.shovel_distance_factor
-
-        self.get_logger().info(f"State: {self.state}, Shovel Ready: {is_shovel_ready}, Target y: {target.y}, Center y: {img_center_y}, Value: {img_center_y * self.shovel_distance_factor}")
 
         # ----- State machine logic (first version)-----
 
@@ -152,8 +150,12 @@ class CameraControllerNode(Node):
             self.state = "align_forward"
         elif is_close or (is_middle and self.state == "align_backward"):
             self.state = "align_backward"
-        elif is_shovel_ready and is_aligned:
+
+        if is_shovel_ready and is_aligned:
             self.state = "use_shovel"
+        elif is_close and is_aligned:
+            self.state = "align_forward"
+
         if self.state != "use_shovel":
             self.shovel_sent = False
             self.shovel_start_time = None
