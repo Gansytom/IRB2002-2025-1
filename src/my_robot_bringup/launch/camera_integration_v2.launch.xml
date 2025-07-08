@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="camera_cpp_pkg" exec="camera_cpp" name="camera_cpp_node" />
+    <node pkg="movement_pkg" exec="camera_controller_node_v2" name="camera_controller_node" />
+</launch>
