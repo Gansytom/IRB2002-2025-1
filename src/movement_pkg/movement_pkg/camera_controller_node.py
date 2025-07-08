@@ -150,7 +150,7 @@ class CameraControllerNode(Node):
             self.state = "align_forward"
         elif is_close or (is_middle and self.state == "align_backward"):
             self.state = "align_backward"
-        elif is_shovel_ready and is_aligned:
+        elif is_shovel_ready and is_close and is_aligned:
             self.state = "use_shovel"
         if self.state != "use_shovel":
             self.shovel_sent = False
