@@ -30,7 +30,7 @@ class PredictionNode(Node):
         self.annotated_frame = None
         self.results = None
 
-        model_path = "/home/tomy/IRB2002-2025-1/src/detection_pkg/detection_pkg/modelo.pt"
+        model_path = "/home/tomy/IRB2002-2025-1/src/detection_pkg/detection_pkg/modelo_v2.pt"
         #model_path = "IRB2002-2025-1/src/detection_pkg/detection_pkg/best_yolo11_ncnn_model"
         self.model = YOLO(model_path)
         self.labels = ["Botellas"]
@@ -114,11 +114,11 @@ class PredictionNode(Node):
                 object_count = object_count + 1
 
         # Draw criteria axis
-        cv2.line(frame, (0, int(img_height/2 * self.below_distance_factor)), (img_width, int(img_height/2 * self.below_distance_factor)), (0, 0, 255), 2)
-        cv2.line(frame, (0, int(img_height/2 * self.above_distance_factor)), (img_width, int(img_height/2 * self.above_distance_factor)), (0, 0, 255), 2)
+        cv2.line(frame, (0, int(img_height/2 * self.below_distance_factor)), (img_width, int(img_height/2 * self.below_distance_factor)), (0, 165, 255), 2)
+        cv2.line(frame, (0, int(img_height/2 * self.above_distance_factor)), (img_width, int(img_height/2 * self.above_distance_factor)), (0, 255, 255), 2)
         cv2.line(frame, (0, int(img_height/2 * self.shovel_distance_factor)), (img_width, int(img_height/2 * self.shovel_distance_factor)), (0, 0, 255), 2)
-        cv2.line(frame, (int(img_width/2 - self.align_threshold), 0), (int(img_width/2 - self.align_threshold), img_height), (0, 0, 255), 2)
-        cv2.line(frame, (int(img_width/2 + self.align_threshold), 0), (int(img_width/2 + self.align_threshold), img_height), (0, 0, 255), 2)
+        cv2.line(frame, (int(img_width/2 - self.align_threshold), 0), (int(img_width/2 - self.align_threshold), img_height), (255, 0, 0), 2)
+        cv2.line(frame, (int(img_width/2 + self.align_threshold), 0), (int(img_width/2 + self.align_threshold), img_height), (255, 0, 0), 2)
 
         # Calculate and draw framerate (if using video, USB, or Picamera source)
         cv2.putText(frame, f'FPS: {self.avg_frame_rate:0.2f}', (10,20), cv2.FONT_HERSHEY_SIMPLEX, .7, (0,255,255), 2) # Draw framerate
