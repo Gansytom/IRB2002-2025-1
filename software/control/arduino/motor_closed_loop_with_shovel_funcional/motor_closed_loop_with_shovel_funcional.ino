@@ -18,6 +18,8 @@ const int endStopLeftBack = 8;
 const int endStopRightFront = 2;
 const int endStopRightBack = 4; 
 
+const int MotorRightStop = A5;
+
 // Variables encoder
 int estadoAnterior_encoder1 = LOW;
 int estadoAnterior_encoder2 = LOW;
@@ -70,6 +72,7 @@ void setup() {
   pinMode(R_PWM_PALA, OUTPUT);
   pinMode(L_PWM_PALA, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
+  pinMode(MotorRightStop, OUTPUT);
   pinMode(encoderPin1, INPUT);
   pinMode(encoderPin2, INPUT);
   pinMode(endStopLeftFront, INPUT);
@@ -78,6 +81,7 @@ void setup() {
   pinMode(endStopRightBack, INPUT);
   Serial.begin(115200);
   digitalWrite(RELAY_PIN, LOW);
+  digitalWrite(MotorRightStop, HIGH);
   tiempoAnterior = millis();
 }
 
@@ -179,9 +183,15 @@ void loop() {
       break;
   
     case PALA_BAJANDO:
-      if (digitalRead(endStopLeftFront) == LOW || digitalRead(endStopRightFront) == LOW) {
+      if (digitalRead(endStopLeftFront) == LOW) {
         moviendo_pala = false;
+        digitalWrite(MotorRightStop, HIGH);
         estadoRobot = DETENIDO;
+      } 
+      else if (digitalRead(endStopRightFront) == LOW){
+        digitalWrite(MotorRightStop, LOW);
+        analogWrite(R_PWM_PALA, 0);
+        analogWrite(L_PWM_PALA, abs(velocidad_pala_ref_L));
       } else {
         analogWrite(R_PWM_PALA, 0);
         analogWrite(L_PWM_PALA, abs(velocidad_pala_ref_L));
