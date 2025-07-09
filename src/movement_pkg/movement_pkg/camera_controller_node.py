@@ -134,33 +134,33 @@ class CameraControllerNode(Node):
 
         # ----- State machine logic (first version)-----
 
-        # if not is_close:
-        #     self.state = "align_forward"
-        # elif is_close and not is_aligned:
-        #     self.state = "align_backward"
-        # elif is_close and is_aligned:
-        #     self.state = "use_shovel"
-
-        # if self.state != "use_shovel":
-        #     self.shovel_sent = False
-        #     self.shovel_start_time = None
-
-        # ----- State machine logic (second version)-----
-        if is_far or (is_middle and self.state == "align_forward"):
+        if not is_close:
             self.state = "align_forward"
-        elif is_close or (is_middle and self.state == "align_backward"):
+        elif is_close and not is_aligned:
             self.state = "align_backward"
-        elif is_middle and self.state == "use_shovel":
-            self.state = "align_forward"
-
-        if is_shovel_ready and is_aligned:
-            self.state = "use_shovel"
         elif is_close and is_aligned:
-            self.state = "align_forward"
+            self.state = "use_shovel"
 
         if self.state != "use_shovel":
             self.shovel_sent = False
             self.shovel_start_time = None
+
+        # ----- State machine logic (second version)-----
+        # if is_far or (is_middle and self.state == "align_forward"):
+        #     self.state = "align_forward"
+        # elif is_close or (is_middle and self.state == "align_backward"):
+        #     self.state = "align_backward"
+        # elif is_middle and self.state == "use_shovel":
+        #     self.state = "align_forward"
+
+        # if is_shovel_ready and is_aligned:
+        #     self.state = "use_shovel"
+        # elif is_close and is_aligned:
+        #     self.state = "align_forward"
+
+        # if self.state != "use_shovel":
+        #     self.shovel_sent = False
+        #     self.shovel_start_time = None
 
         # Set the command based on the state
         cmd = CmdVel()
