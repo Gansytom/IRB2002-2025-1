@@ -53,8 +53,8 @@ class CameraControllerNode(Node):
 
         # ----- Axis criteria -----
         self.above_distance_factor = 0.6
-        self.below_distance_factor = 1.4 # Probar subir criterio para còdigo de arduino nuevo
-        self.shovel_distance_factor = 1.7 # Probar subir criterio para còdigo de arduino nuevo
+        self.below_distance_factor = 1.2 # Probar subir criterio para còdigo de arduino nuevo
+        self.shovel_distance_factor = 1.5 # Probar subir criterio para còdigo de arduino nuevo
         self.align_threshold = 200
         self.axis_criteria = None
 
@@ -177,6 +177,9 @@ class CameraControllerNode(Node):
             if not self.shovel_sent:
                 if self.shovel_start_time is None:
                     self.shovel_start_time = now
+                    cmd.command = "move"
+                    cmd.left_velocity = 0.0
+                    cmd.right_velocity = 0.0
                     
                 elif now - self.shovel_start_time > self.shovel_wait_time:
                     self.get_logger().info("Shovel command issued.")
