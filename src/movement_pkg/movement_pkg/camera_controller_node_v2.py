@@ -40,7 +40,7 @@ class CameraControllerNode(Node):
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
-        self.base_speed = 75 # 75 o 45
+        self.base_speed = 45 # 75 o 45
         self.shovel_base_speed = 150.0
         self.correction_factor = 1.0
 
@@ -53,8 +53,8 @@ class CameraControllerNode(Node):
 
         # ----- Axis criteria -----
         self.above_distance_factor = 0.6
-        self.below_distance_factor = 1.4
-        self.shovel_distance_factor = 1.7
+        self.below_distance_factor = 1.4 # Probar subir criterio para còdigo de arduino nuevo
+        self.shovel_distance_factor = 1.7 # Probar subir criterio para còdigo de arduino nuevo
         self.align_threshold = 200
         self.axis_criteria = None
 
