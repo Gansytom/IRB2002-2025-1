@@ -40,7 +40,7 @@ class CameraControllerNode(Node):
         self.pid = PID(kp=0.05, ki=0.0, kd=0.001)
         self.last_time = self.get_clock().now().nanoseconds / 1e9
         self.target = None
-        self.base_speed = 45
+        self.base_speed = 75 # 75 o 45
         self.shovel_base_speed = 150.0
 
         self.tracked_target = None
@@ -150,6 +150,8 @@ class CameraControllerNode(Node):
             self.state = "align_forward"
         elif is_close or (is_middle and self.state == "align_backward"):
             self.state = "align_backward"
+        elif is_middle and self.state == "use_shovel":
+            self.state = "align_forward"
 
         if is_shovel_ready and is_aligned:
             self.state = "use_shovel"
